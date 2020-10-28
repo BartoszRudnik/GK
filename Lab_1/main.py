@@ -1,39 +1,69 @@
+import math
 import sys
-from glfw.GLFW import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
 from random import *
+
+from OpenGL.GL import *
+from glfw.GLFW import *
+
 
 def startup():
     update_viewport(None, 400, 400)
     glClearColor(0.5, 0.5, 0.5, 1.0)
 
-def setRed() :
+
+def setRed():
     global red
     red = uniform(0.0, 1.0)
 
-def setGreen() :
+
+def setGreen():
     global green
     green = uniform(0.0, 1.0)
 
-def setBlue() :
+
+def setBlue():
     global blue
     blue = uniform(0.0, 1.0)
+
 
 red = uniform(0.0, 1.0)
 green = uniform(0.0, 1.0)
 blue = uniform(0.0, 1.0)
 
-def sierpinski(n, x, y, a, b):
 
-    if n > 0 :
+def triangle(x, y, a):
+    h = a * math.sqrt(3) / 2
 
-        h = a/3
-        w = b/3
+    glColor3f(red, green, blue)
+    glBegin(GL_TRIANGLES)
+    glVertex2f(x, y)
+    glVertex2f(x + a, y)
+    glVertex2f(x + a / 2, y + h)
+    glEnd()
 
-        for i in range(9) :
-            if i != 4 :
-                sierpinski(n - 1, x + (i % 3) * h, y + int((i / 3)) * w, h, w)
+
+def sierpinskiTriangle(n, x, y, a):
+    if n > 0:
+        w = a / 2
+        h = w * math.sqrt(3) / 2
+
+        sierpinskiTriangle(n - 1, x, y, w)
+        sierpinskiTriangle(n - 1, x + w / 2, y + h, w)
+        sierpinskiTriangle(n - 1, x + w, y, w)
+
+    if n == 0:
+        triangle(x, y, a)
+
+
+def sierpinskiCarpet(n, x, y, a, b):
+    if n > 0:
+
+        h = a / 3
+        w = b / 3
+
+        for i in range(9):
+            if i != 4:
+                sierpinskiCarpet(n - 1, x + (i % 3) * h, y + int((i / 3)) * w, h, w)
 
     if n == 0 :
         rectangle(x, y, a, b, 0)
@@ -62,10 +92,11 @@ def rectangle(x, y, a, b, d):
     glEnd()
 
 def render(time):
-
     glClear(GL_COLOR_BUFFER_BIT)
 
-    sierpinski(5, -50, -50, 100, 100)
+    # sierpinskiCarpet(5, -50, -50, 100, 100)
+
+    sierpinskiTriangle(3, -50, -50, 100)
 
     glFlush()
 
