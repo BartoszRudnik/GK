@@ -1,7 +1,7 @@
 import math
 import sys
-from random import *
 
+import numpy as np
 from OpenGL.GL import *
 from glfw.GLFW import *
 
@@ -11,36 +11,31 @@ def startup():
     glClearColor(0.5, 0.5, 0.5, 1.0)
 
 
-def setRed():
-    global red
-    red = uniform(0.0, 1.0)
+def newRandomColor():
+    global color1, color2, color3, color4
+    color1 = np.random.uniform(0.0, 1.0, 3)
+    color2 = np.random.uniform(0.0, 1.0, 3)
+    color3 = np.random.uniform(0.0, 1.0, 3)
+    color4 = np.random.uniform(0.0, 1.0, 3)
 
 
-def setGreen():
-    global green
-    green = uniform(0.0, 1.0)
-
-
-def setBlue():
-    global blue
-    blue = uniform(0.0, 1.0)
-
-
-red = uniform(0.0, 1.0)
-green = uniform(0.0, 1.0)
-blue = uniform(0.0, 1.0)
+color1 = np.random.uniform(0.0, 1.0, 3)
+color2 = np.random.uniform(0.0, 1.0, 3)
+color3 = np.random.uniform(0.0, 1.0, 3)
+color4 = np.random.uniform(0.0, 1.0, 3)
 
 
 def triangle(x, y, a):
     h = a * math.sqrt(3) / 2
 
-    glColor3f(red, green, blue)
     glBegin(GL_TRIANGLES)
+    glColor3f(color1[0], color1[1], color1[2])
     glVertex2f(x, y)
+    glColor3f(color2[0], color2[1], color2[2])
     glVertex2f(x + a, y)
+    glColor3f(color3[0], color3[1], color3[2])
     glVertex2f(x + a / 2, y + h)
     glEnd()
-
 
 def sierpinskiTriangle(n, x, y, a):
     if n > 0:
@@ -54,7 +49,6 @@ def sierpinskiTriangle(n, x, y, a):
     if n == 0:
         triangle(x, y, a)
 
-
 def sierpinskiCarpet(n, x, y, a, b):
     if n > 0:
 
@@ -66,46 +60,42 @@ def sierpinskiCarpet(n, x, y, a, b):
                 sierpinskiCarpet(n - 1, x + (i % 3) * h, y + int((i / 3)) * w, h, w)
 
     if n == 0 :
-        rectangle(x, y, a, b, 0)
+        rectangle(x, y, a, b, 0.0)
 
 def shutdown():
     pass
 
 def rectangle(x, y, a, b, d):
-
-    if(d > 0.0) :
-        a = a * d
-        b = b * d
-
-    glColor3f(red, green, blue)
     glBegin(GL_TRIANGLES)
+    glColor3f(color1[0], color1[1], color1[2])
     glVertex2f(x, y)
+    glColor3f(color2[0], color2[1], color2[2])
     glVertex2f(x, y - b)
-    glVertex2f(x + a, y - b)
+    glColor3f(color3[0], color3[1], color3[2])
+    glVertex2f(x + a, y - b - d)
     glEnd()
 
-    glColor3f(red, green, blue)
     glBegin(GL_TRIANGLES)
+    glColor3f(color1[0], color1[1], color1[2])
     glVertex2f(x, y)
+    glColor3f(color4[0], color4[1], color4[2])
     glVertex2f(x + a, y)
-    glVertex2f(x + a, y - b)
+    glColor3f(color3[0], color3[1], color3[2])
+    glVertex2f(x + a, y - b - d)
     glEnd()
 
 def render(time):
     glClear(GL_COLOR_BUFFER_BIT)
 
-    # sierpinskiCarpet(5, -50, -50, 100, 100)
-
-    sierpinskiTriangle(3, -50, -50, 100)
+    sierpinskiCarpet(3, -95, -95, 95, 95)
+    sierpinskiTriangle(3, -95, 5, 95)
+    rectangle(5, 75, 75, 50, 10)
 
     glFlush()
 
 
 def update_viewport(window, width, height):
-
-    setRed()
-    setGreen()
-    setBlue()
+    newRandomColor()
 
     if height == 0:
         height = 1
@@ -126,7 +116,6 @@ def update_viewport(window, width, height):
 
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
-
 
 def main():
     if not glfwInit():
@@ -149,7 +138,6 @@ def main():
     shutdown()
 
     glfwTerminate()
-
 
 if __name__ == '__main__':
     main()
