@@ -3,33 +3,46 @@ from glfw.GLFW import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from random import *
-from time import *
 
 def startup():
     update_viewport(None, 400, 400)
     glClearColor(0.5, 0.5, 0.5, 1.0)
 
+def setWhite():
+    global red, green, blue
+    red = 1.0
+    green = 1.0
+    blue = 1.0
+
 def setRed() :
-    global red, red1
+    global red
     red = uniform(0.0, 1.0)
-    red1 = uniform(0.0, 1.0)
 
 def setGreen() :
-    global green, green1
+    global green
     green = uniform(0.0, 1.0)
-    green1 = uniform(0.0, 1.0)
 
 def setBlue() :
-    global blue, blue1
+    global blue
     blue = uniform(0.0, 1.0)
-    blue1 = uniform(0.0, 1.0)
 
 red = uniform(0.0, 1.0)
 green = uniform(0.0, 1.0)
 blue = uniform(0.0, 1.0)
-red1 = uniform(0.0, 1.0)
-green1 = uniform(0.0, 1.0)
-blue1 = uniform(0.0, 1.0)
+
+def sierpinski(n, x, y, a, b):
+
+    if n > 0 :
+
+        h = a/3
+        w = b/3
+
+        for i in range(9) :
+            if i != 4 :
+                sierpinski(n - 1, x + (i % 3) * h, y + int((i / 3)) * w, h, w)
+
+    if n == 0 :
+        rectangle(x, y, a, b, 0)
 
 def shutdown():
     pass
@@ -42,40 +55,23 @@ def rectangle(x, y, a, b, d):
 
     glColor3f(red, green, blue)
     glBegin(GL_TRIANGLES)
-    glVertex2f(x - a/2, y + b/2)
-    glVertex2f(x - a/2, y - b/2)
-    glVertex2f(x + a/2, y - b/2)
+    glVertex2f(x, y)
+    glVertex2f(x, y - b)
+    glVertex2f(x + a, y - b)
     glEnd()
 
-    glColor3f(red1, green1, blue1)
+    glColor3f(red, green, blue)
     glBegin(GL_TRIANGLES)
-    glVertex2f(x - a/2, y + b/2)
-    glVertex2f(x + a/2, y + b/2)
-    glVertex2f(x + a/2, y - b/2)
+    glVertex2f(x, y)
+    glVertex2f(x + a, y)
+    glVertex2f(x + a, y - b)
     glEnd()
 
 def render(time):
+
     glClear(GL_COLOR_BUFFER_BIT)
 
-    rectangle(0,-50, 30, 50, 1.5)
-
-    glBegin(GL_TRIANGLES)
-    glColor3f(0.0, 1.0, 0.0)
-    glVertex2f(0.0, 0.0)
-    glColor3f(0.5, 0.0, 0.1)
-    glVertex2f(0.0, 50.0)
-    glColor3f(0.0, 0.6, 0.5)
-    glVertex2f(50.0, 0.0)
-    glEnd()
-
-    glBegin(GL_TRIANGLES)
-    glColor3f(0.1, 0.1, 0.8)
-    glVertex2f(0.0, 0.0)
-    glColor3f(0.7, 0.3, 0.0)
-    glVertex2f(0.0, 50.0)
-    glColor3f(0.5, 0.0, 0.2)
-    glVertex2f(-50.0, 0.0)
-    glEnd()
+    sierpinski(5, -50, -50, 100, 100)
 
     glFlush()
 
