@@ -8,12 +8,6 @@ def startup():
     update_viewport(None, 400, 400)
     glClearColor(0.5, 0.5, 0.5, 1.0)
 
-def setWhite():
-    global red, green, blue
-    red = 1.0
-    green = 1.0
-    blue = 1.0
-
 def setRed() :
     global red
     red = uniform(0.0, 1.0)
