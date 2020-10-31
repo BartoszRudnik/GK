@@ -11,7 +11,8 @@ def startup():
     glClearColor(0.5, 0.5, 0.5, 1.0)
 
 
-def newRandomColor():
+# funkcja wyznaczajaca nowy kolor
+def newColor():
     global color1, color2, color3, color4
     color1 = np.random.uniform(0.0, 1.0, 3)
     color2 = np.random.uniform(0.0, 1.0, 3)
@@ -25,7 +26,9 @@ color3 = np.random.uniform(0.0, 1.0, 3)
 color4 = np.random.uniform(0.0, 1.0, 3)
 
 
+# funkcja rysujaca trojkat rownoboczny, a -> dlugosc boku; x,y -> wspolrzedne lewego wierzcholka trojkata
 def triangle(x, y, a):
+    # wyznaczenie wysokosci trojkata rownobocznego
     h = a * math.sqrt(3) / 2
 
     glBegin(GL_TRIANGLES)
@@ -37,34 +40,48 @@ def triangle(x, y, a):
     glVertex2f(x + a / 2, y + h)
     glEnd()
 
+
+#funkcja rysujaca trojkat sierpinskiego, n -> stopien; a -> dlugosc boku; x,y -> wspolrzedne lewego wierzcholka trojkata
 def sierpinskiTriangle(n, x, y, a):
     if n > 0:
+        # dlugosc boku mniejszego trojkata
         w = a / 2
+
+        # wyznaczenie wysokosci trojkata rownobocznego
         h = w * math.sqrt(3) / 2
 
+        # dzielimy trojkat na 4 mniejsze trojkaty pomijajac srodkowy trojkat
         sierpinskiTriangle(n - 1, x, y, w)
         sierpinskiTriangle(n - 1, x + w / 2, y + h, w)
         sierpinskiTriangle(n - 1, x + w, y, w)
 
+    #gdy zakonczymy podzial w wyznaczonych wspolrzednych rysujemy trojkaty
     if n == 0:
         triangle(x, y, a)
 
+
+#funkcja rysujaca dywan sierpinskiego, n -> stopien; x,y -> wspolrzedne lewego gornego wierzcholka; -> a,b -> szerokosc i wysokosc
 def sierpinskiCarpet(n, x, y, a, b):
     if n > 0:
 
+        #wysokosc i szerokosc mniejszego prostokata
         h = a / 3
         w = b / 3
 
+        #dzielimy wiekszy prostokat na 9 mniejszych, pomijajac srodkowy prostokat
         for i in range(9):
             if i != 4:
                 sierpinskiCarpet(n - 1, x + (i % 3) * h, y + int((i / 3)) * w, h, w)
 
+    #gdy zakonczymy podzial w wyznaczonych wspolrzednych rysujemy prostokaty
     if n == 0 :
         rectangle(x, y, a, b, 0.0)
 
 def shutdown():
     pass
 
+
+#funkcja rysujaca prostokat skladajacy sie z 2 trojkat, x,y -> wspolrzedne lewego gornego wierzcholka; a,b -> szerokosc i wysokosc, d -> deformacja
 def rectangle(x, y, a, b, d):
     glBegin(GL_TRIANGLES)
     glColor3f(color1[0], color1[1], color1[2])
@@ -87,15 +104,15 @@ def rectangle(x, y, a, b, d):
 def render(time):
     glClear(GL_COLOR_BUFFER_BIT)
 
-    sierpinskiCarpet(3, -95, -95, 95, 95)
-    sierpinskiTriangle(3, -95, 5, 95)
-    rectangle(5, 75, 75, 50, 10)
+    sierpinskiCarpet(3, -95, -85, 95, 95)
+    sierpinskiTriangle(3, -95, 15, 95)
+    rectangle(5, 75, 75, 50, -10)
 
     glFlush()
 
 
 def update_viewport(window, width, height):
-    newRandomColor()
+    newColor()
 
     if height == 0:
         height = 1
