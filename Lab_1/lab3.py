@@ -6,8 +6,9 @@ import numpy as np
 from OpenGL.GL import *
 from glfw.GLFW import *
 
-N = 100
+N = 50
 
+triangleColors = np.random.rand(N, N, 3)
 
 def computeEgg(N):
     tab = np.zeros((N, N, 3))
@@ -59,6 +60,33 @@ def linesEgg():
     glEnd()
 
 
+def trianglesEgg():
+    tab = computeEgg(N)
+
+    glBegin(GL_TRIANGLES)
+
+    for i in range(N - 1):
+        for j in range(N - 1):
+            glColor3f(triangleColors[i, j, 0], triangleColors[i, j, 1], triangleColors[i, j, 2])
+            glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
+
+            glColor3f(triangleColors[i + 1, j, 0], triangleColors[i + 1, j, 1], triangleColors[i + 1, j, 2])
+            glVertex3f(tab[i + 1, j, 0], tab[i + 1, j, 1], tab[i + 1, j, 2])
+
+            glColor3f(triangleColors[i, j + 1, 0], triangleColors[i, j + 1, 1], triangleColors[i, j + 1, 2])
+            glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+
+            glColor3f(triangleColors[i + 1, j + 1, 0], triangleColors[i + 1, j + 1, 1], triangleColors[i + 1, j + 1, 2])
+            glVertex3f(tab[i + 1, j + 1, 0], tab[i + 1, j + 1, 1], tab[i + 1, j + 1, 2])
+
+            glColor3f(triangleColors[i + 1, j, 0], triangleColors[i + 1, j, 1], triangleColors[i + 1, j, 2])
+            glVertex3f(tab[i + 1, j, 0], tab[i + 1, j, 1], tab[i + 1, j, 2])
+
+            glColor3f(triangleColors[i, j + 1, 0], triangleColors[i, j + 1, 1], triangleColors[i, j + 1, 2])
+            glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+
+    glEnd()
+
 def startup():
     update_viewport(None, 400, 400)
     glClearColor(0.0, 0.0, 0.0, 1.0)
@@ -93,7 +121,8 @@ def render(time):
 
     spin(time * 180 / math.pi)
     # pointsEgg()
-    linesEgg()
+    # linesEgg()
+    trianglesEgg()
 
     axes()
 
