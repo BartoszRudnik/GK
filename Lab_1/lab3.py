@@ -6,24 +6,57 @@ import numpy as np
 from OpenGL.GL import *
 from glfw.GLFW import *
 
+N = 100
 
-def compute(N):
+
+def computeEgg(N):
     tab = np.zeros((N, N, 3))
 
+    tmp = 1 / (N - 1)
+
     for i in range(N):
+        U = i * tmp
         for j in range(N):
-            U = i / (N - 1)
-            V = j / (N - 1)
+            V = j * tmp
 
             X = (-90 * pow(U, 5) + 225 * pow(U, 4) - 270 * pow(U, 3) + 180 * pow(U, 2) - 45 * U) * math.cos(math.pi * V)
             Y = 160 * pow(U, 4) - 320 * pow(U, 3) + 160 * pow(U, 2)
             Z = (-90 * pow(U, 5) + 225 * pow(U, 4) - 270 * pow(U, 3) + 180 * pow(U, 2) - 45 * U) * math.sin(math.pi * V)
 
             tab[i, j, 0] = X
-            tab[i, j, 1] = Y
+            tab[i, j, 1] = Y - 5
             tab[i, j, 2] = Z
 
     return tab
+
+
+def spin(angle):
+    glRotatef(angle, 1.0, 0.0, 0.0)
+    glRotatef(angle, 0.0, 1.0, 0.0)
+    glRotatef(angle, 0.0, 0.0, 1.0)
+
+
+def pointsEgg():
+    tab = computeEgg(N)
+    glBegin(GL_POINTS)
+    for i in range(N):
+        for j in range(N):
+            glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
+    glEnd()
+
+
+def linesEgg():
+    tab = computeEgg(N)
+    glBegin(GL_LINES)
+    for i in range(N - 1):
+        for j in range(N - 1):
+            glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
+            glVertex3f(tab[i + 1, j, 0], tab[i + 1, j, 1], tab[i + 1, j, 2])
+
+            glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
+            glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+
+    glEnd()
 
 
 def startup():
@@ -58,19 +91,13 @@ def render(time):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
-    N = 100
-    tab = compute(N)
-
-    glBegin(GL_POINTS)
-    for i in range(N):
-        for j in range(N):
-            glVertex3f(tab[i, j, 0], tab[i, j, 1] - 5, tab[i, j, 2])
-    glEnd()
+    spin(time * 180 / math.pi)
+    # pointsEgg()
+    linesEgg()
 
     axes()
 
     glFlush()
-
 
 def update_viewport(window, width, height):
     if width == 0:
