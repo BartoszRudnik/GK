@@ -130,7 +130,7 @@ def computeTorus(N, R, r, moveX, moveY, moveZ):
 
 
 def pointsTorus(moveX, moveY, moveZ):
-    tab = computeTorus(N, 1.5, 0.2, moveX, moveY, moveZ)
+    tab = computeTorus(N, 1.3, 0.2, moveX, moveY, moveZ)
     glBegin(GL_POINTS)
     for i in range(N):
         for j in range(N):
@@ -187,12 +187,12 @@ def drawChain():
     glColor3f(1.0, 0.0, 0.0)
 
     vertical = -8.0
-    horizontal = -6.5
+    horizontal = -6
 
     for i in range(7):
 
         vertical += 2
-        horizontal += 0.5
+        horizontal += 0.2
 
         if (i % 2 == 0):
             pointsTorus(horizontal, vertical, 0)
