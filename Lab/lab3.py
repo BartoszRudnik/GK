@@ -6,7 +6,7 @@ import numpy as np
 from OpenGL.GL import *
 from glfw.GLFW import *
 
-N = 150
+N = 50
 
 triangleColors = np.random.rand(N, N, 3)
 
@@ -138,6 +138,26 @@ def pointsTorus(moveX, moveY, moveZ):
     glEnd()
 
 
+def drawChain():
+    glColor3f(1.0, 0.0, 0.0)
+
+    vertical = -8.0
+    horizontal = -6
+
+    for i in range(7):
+
+        vertical += 2
+        horizontal += 0.2
+
+        if (i % 2 == 0):
+            pointsTorus(horizontal, vertical, 0)
+        else:
+            pointsTorus(0, -vertical, horizontal)
+
+        glRotatef(90, 1.0, 0.0, 0.0)
+        glRotatef(90, 0.0, 1.0, 0.0)
+        glRotatef(90, 0.0, 0.0, 1.0)
+
 def startup():
     update_viewport(None, 400, 400)
     glClearColor(0.0, 0.0, 0.0, 1.0)
@@ -174,35 +194,13 @@ def render(time):
     # pointsEgg()
     # linesEgg()
     # trianglesEgg()
-    # trianglesStripEgg()
+    trianglesStripEgg()
 
-    drawChain()
+    # drawChain()
 
-    # axes()
+    axes()
 
     glFlush()
-
-
-def drawChain():
-    glColor3f(1.0, 0.0, 0.0)
-
-    vertical = -8.0
-    horizontal = -6
-
-    for i in range(7):
-
-        vertical += 2
-        horizontal += 0.2
-
-        if (i % 2 == 0):
-            pointsTorus(horizontal, vertical, 0)
-        else:
-            pointsTorus(0, -vertical, horizontal)
-
-        glRotatef(90, 1.0, 0.0, 0.0)
-        glRotatef(90, 0.0, 1.0, 0.0)
-        glRotatef(90, 0.0, 0.0, 1.0)
-
 
 def update_viewport(window, width, height):
     if width == 0:
@@ -245,7 +243,6 @@ def main():
     shutdown()
 
     glfwTerminate()
-
 
 if __name__ == '__main__':
     main()
