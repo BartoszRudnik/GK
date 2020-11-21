@@ -8,6 +8,7 @@ from glfw.GLFW import *
 
 viewer = [0.0, 0.0, 10.0]
 
+reverse = 1
 R = 10
 scale = 1.0
 theta = 0.0
@@ -16,6 +17,7 @@ pix2angle = 1.0
 
 right_mouse_button_pressed = 0
 left_mouse_button_pressed = 0
+trybKamery = 0
 
 mouse_x_pos_old = 0
 mouse_y_pos_old = 0
@@ -93,29 +95,40 @@ def render(time):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
-    cameraMotion(R, phi, theta)
+    if trybKamery:
 
-    gluLookAt(viewer[0], viewer[1], viewer[2], 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+        gluLookAt(viewer[0], viewer[1], viewer[2], 0.0, 0.0, 0.0, 0.0, reverse, 0.0)
 
-    if left_mouse_button_pressed:
-        theta += delta_x * pix2angle
-        phi += delta_y * pix2angle
+        if left_mouse_button_pressed:
+            theta += delta_x * pix2angle
+            phi += delta_y * pix2angle
+            cameraMotion(R, phi, theta)
 
-    if right_mouse_button_pressed:
-        scaleChange = (delta_x / 100) + (delta_y / 100)
+        if right_mouse_button_pressed:
+            rChange = (delta_x / 100) + (delta_y / 100)
+            if 5.5 <= R + rChange <= 15:
+                R += rChange
+            cameraMotion(R, phi, theta)
+        else:
+            R = 10
 
-        if (scale + scaleChange >= 0.1 and scale + scaleChange <= 1.9):
-            scale += scaleChange
-
-        if (R + scaleChange >= 3 and R + scaleChange <= 15):
-            R += scaleChange
     else:
-        scale = 1
-        R = 10
+        gluLookAt(0, 0, 10, 0.0, 0.0, 0.0, 0.0, 1, 0.0)
 
-    # glRotatef(theta, 0.0, 1.0, 0.0)
-    # glRotatef(phi, 1.0, 0.0, 0.0)
-    # glScalef(scale, scale, scale)
+        if left_mouse_button_pressed:
+            theta += delta_x * pix2angle
+            phi += delta_y * pix2angle
+
+        if right_mouse_button_pressed:
+            scaleChange = (delta_x / 100) + (delta_y / 100)
+            if 0.1 <= scale + scaleChange <= 1.9:
+                scale += scaleChange
+        else:
+            scale = 1
+
+        glRotatef(theta, 0.0, 1.0, 0.0)
+        glRotatef(phi, 1.0, 0.0, 0.0)
+        glScalef(scale, scale, scale)
 
     axes()
     example_object()
@@ -124,16 +137,26 @@ def render(time):
 
 
 def cameraMotion(R, phi, theta):
-    theta /= 10
-    phi /= 10
+    global reverse
 
-    x_eye = R * math.cos(theta) * math.cos(phi)
-    y_eye = R * math.sin(phi)
-    z_eye = R * math.sin(theta) * math.cos(phi)
+    theta = math.fabs(theta % 360)
+    phi = math.fabs(phi % 360)
+
+    thetaRadians = math.radians(theta)
+    phiRadians = math.radians(phi)
+
+    x_eye = R * math.cos(thetaRadians) * math.cos(phiRadians)
+    y_eye = R * math.sin(phiRadians)
+    z_eye = R * math.sin(thetaRadians) * math.cos(phiRadians)
 
     viewer[0] = x_eye
     viewer[1] = y_eye
     viewer[2] = z_eye
+
+    if phi > 90 and phi < 270:
+        reverse = -1
+    else:
+        reverse = 1
 
 
 def update_viewport(window, width, height):
@@ -155,9 +178,15 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
+    global trybKamery, pomoc
+
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
 
+    if key == GLFW_KEY_E and action == GLFW_PRESS:
+        trybKamery = 1
+    if key == GLFW_KEY_T and action == GLFW_PRESS:
+        trybKamery = 0
 
 def mouse_motion_callback(window, x_pos, y_pos):
     global delta_x, delta_y
