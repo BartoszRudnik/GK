@@ -153,7 +153,7 @@ def cameraMotion(R, phi, theta):
     viewer[1] = y_eye
     viewer[2] = z_eye
 
-    if phi > 90 and phi < 270:
+    if 90 < phi < 270:
         reverse = -1
     else:
         reverse = 1
@@ -178,7 +178,7 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
-    global trybKamery, pomoc
+    global trybKamery
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
@@ -187,6 +187,7 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         trybKamery = 1
     if key == GLFW_KEY_T and action == GLFW_PRESS:
         trybKamery = 0
+
 
 def mouse_motion_callback(window, x_pos, y_pos):
     global delta_x, delta_y
