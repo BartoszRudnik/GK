@@ -8,7 +8,7 @@ from glfw.GLFW import *
 
 viewer = [0.0, 0.0, 10.0]
 
-reverse = 1
+reverseCamera = 1
 R = 10
 scale = 1.0
 theta = 0.0
@@ -97,7 +97,7 @@ def render(time):
 
     if trybKamery:
 
-        gluLookAt(viewer[0], viewer[1], viewer[2], 0.0, 0.0, 0.0, 0.0, reverse, 0.0)
+        gluLookAt(viewer[0], viewer[1], viewer[2], 0.0, 0.0, 0.0, 0.0, reverseCamera, 0.0)
 
         if left_mouse_button_pressed:
             theta += delta_x * pix2angle
@@ -137,7 +137,7 @@ def render(time):
 
 
 def cameraMotion(R, phi, theta):
-    global reverse
+    global reverseCamera
 
     theta = math.fabs(theta % 360)
     phi = math.fabs(phi % 360)
@@ -154,9 +154,9 @@ def cameraMotion(R, phi, theta):
     viewer[2] = z_eye
 
     if 90 < phi < 270:
-        reverse = -1
+        reverseCamera = -1
     else:
-        reverse = 1
+        reverseCamera = 1
 
 
 def update_viewport(window, width, height):
