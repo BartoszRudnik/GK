@@ -6,7 +6,7 @@ import numpy as np
 from OpenGL.GL import *
 from glfw.GLFW import *
 
-N = 100
+N = 50
 
 triangleColors = np.random.rand(N, N, 3)
 
@@ -78,25 +78,39 @@ def trianglesEgg():
 
     for i in range(N - 1):
         for j in range(N - 1):
-            #element (i,j) łaczony jest z elementami (i + 1, j) oraz (i, j + 1)
+
+            # element (i,j) łaczony jest z elementami (i + 1, j) oraz (i, j + 1)
             glColor3f(triangleColors[i, j, 0], triangleColors[i, j, 1], triangleColors[i, j, 2])
             glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
 
             glColor3f(triangleColors[i + 1, j, 0], triangleColors[i + 1, j, 1], triangleColors[i + 1, j, 2])
             glVertex3f(tab[i + 1, j, 0], tab[i + 1, j, 1], tab[i + 1, j, 2])
 
-            glColor3f(triangleColors[i, j + 1, 0], triangleColors[i, j + 1, 1], triangleColors[i, j + 1, 2])
-            glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+            if j == N - 2:
+                glColor3f(triangleColors[i, 1, 0], triangleColors[i, 1, 1], triangleColors[i, 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+            else:
+                glColor3f(triangleColors[i, j + 1, 0], triangleColors[i, j + 1, 1], triangleColors[i, j + 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
 
-            #wyznaczenie trojkata dopelniajacego
-            glColor3f(triangleColors[i + 1, j + 1, 0], triangleColors[i + 1, j + 1, 1], triangleColors[i + 1, j + 1, 2])
-            glVertex3f(tab[i + 1, j + 1, 0], tab[i + 1, j + 1, 1], tab[i + 1, j + 1, 2])
+            # wyznaczenie trojkata dopelniajacego
+            if j == N - 2:
+                glColor3f(triangleColors[i + 1, 1, 0], triangleColors[i + 1, 1, 1], triangleColors[i + 1, 1, 2])
+                glVertex3f(tab[i + 1, j + 1, 0], tab[i + 1, j + 1, 1], tab[i + 1, j + 1, 2])
+            else:
+                glColor3f(triangleColors[i + 1, j + 1, 0], triangleColors[i + 1, j + 1, 1],
+                          triangleColors[i + 1, j + 1, 2])
+                glVertex3f(tab[i + 1, j + 1, 0], tab[i + 1, j + 1, 1], tab[i + 1, j + 1, 2])
 
             glColor3f(triangleColors[i + 1, j, 0], triangleColors[i + 1, j, 1], triangleColors[i + 1, j, 2])
             glVertex3f(tab[i + 1, j, 0], tab[i + 1, j, 1], tab[i + 1, j, 2])
 
-            glColor3f(triangleColors[i, j + 1, 0], triangleColors[i, j + 1, 1], triangleColors[i, j + 1, 2])
-            glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+            if j == N - 2:
+                glColor3f(triangleColors[i, 1, 0], triangleColors[i, 1, 1], triangleColors[i, 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+            else:
+                glColor3f(triangleColors[i, j + 1, 0], triangleColors[i, j + 1, 1], triangleColors[i, j + 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
 
     glEnd()
 
@@ -108,6 +122,7 @@ def trianglesStripEgg():
     glBegin(GL_TRIANGLE_STRIP)
     for i in range(N - 1):
         for j in range(N - 1):
+
             glColor3f(triangleColors[i, j, 0], triangleColors[i, j, 1], triangleColors[i, j, 2])
             glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
 
@@ -119,6 +134,7 @@ def trianglesStripEgg():
 
             glColor3f(triangleColors[i + 1, j + 1, 0], triangleColors[i + 1, j + 1, 1], triangleColors[i + 1, j + 1, 2])
             glVertex3f(tab[i + 1, j + 1, 0], tab[i + 1, j + 1, 1], tab[i + 1, j + 1, 2])
+
     glEnd()
 
 
@@ -217,16 +233,16 @@ def render(time):
     spin(time * 180 / math.pi)
 
     # wywolanie funkcji tworzacej model jajka przy pomocy punktów
-    pointsEgg()
+    #pointsEgg()
 
     # wywolanie funkcji tworzacej model jajka przy pomocy linii
     # linesEgg()
 
     # wywolanie funkcji tworzacej model jajka przy pomocy trojkatow
-    # trianglesEgg()
+    trianglesEgg()
 
     # wywolanie funkcji tworzacej model jajka przy pomocy prymitywu paskowego
-    # trianglesStripEgg()
+    #trianglesStripEgg()
 
     # wywołanie funkcji tworzacej lancuch przy pomocy torusow
     # drawChain()
