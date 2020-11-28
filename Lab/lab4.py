@@ -95,6 +95,7 @@ def render(time):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
+    # zeby wlaczyc trzeba wcisnac 'E' na klawiaturze
     if trybKamery:
 
         gluLookAt(viewer[0], viewer[1], viewer[2], 0.0, 0.0, 0.0, 0.0, reverseCamera, 0.0)
@@ -104,21 +105,26 @@ def render(time):
             phi += delta_y * pix2angle
             cameraMotion(R, phi, theta)
 
+        #przy wcisnietym prawym przycisku myszki zmiana wartosci parametru R
         if right_mouse_button_pressed:
             rChange = (delta_x / 100) + (delta_y / 100)
+            #ograniczenie dla przyblizania i oddalania kamery
             if 5.5 <= R + rChange <= 15:
                 R += rChange
             cameraMotion(R, phi, theta)
         else:
             R = 10
 
+    #zeby wlaczyc trzeba wcisnac 'T' na klawiaturze
     else:
         gluLookAt(0, 0, 10, 0.0, 0.0, 0.0, 0.0, 1, 0.0)
 
         if left_mouse_button_pressed:
             theta += delta_x * pix2angle
+            #zmienna do wyznaczenia obrotu wokół osi X o kat phi
             phi += delta_y * pix2angle
 
+        #przy wcisnietym prawym przycisku myszki zmiana wartosci zmiennej scale
         if right_mouse_button_pressed:
             scaleChange = (delta_x / 100) + (delta_y / 100)
             if 0.1 <= scale + scaleChange <= 1.9:
@@ -128,6 +134,7 @@ def render(time):
 
         glRotatef(theta, 0.0, 1.0, 0.0)
         glRotatef(phi, 1.0, 0.0, 0.0)
+        #przeskalowanie obiektu przy pomocy zmiennej scale
         glScalef(scale, scale, scale)
 
     axes()
@@ -136,15 +143,19 @@ def render(time):
     glFlush()
 
 
+#funkcja sluzaca do poruszania kamera wokol modelu
 def cameraMotion(R, phi, theta):
     global reverseCamera
 
-    theta = math.fabs(theta % 360)
-    phi = math.fabs(phi % 360)
+    # kat pheta i phi z zakresu [0, 2 * pi]
+    theta = math.fabs(theta % 361)
+    phi = math.fabs(phi % 361)
 
+    # zamiana theta i phi na radiany
     thetaRadians = math.radians(theta)
     phiRadians = math.radians(phi)
 
+    # obliczenie nowych wspolrzednych dla kamery
     x_eye = R * math.cos(thetaRadians) * math.cos(phiRadians)
     y_eye = R * math.sin(phiRadians)
     z_eye = R * math.sin(thetaRadians) * math.cos(phiRadians)
@@ -153,6 +164,7 @@ def cameraMotion(R, phi, theta):
     viewer[1] = y_eye
     viewer[2] = z_eye
 
+    #obrocenie kamery w celu poprawnosci przejscia kamery wokol modelu
     if 90 < phi < 270:
         reverseCamera = -1
     else:
@@ -183,8 +195,10 @@ def keyboard_key_callback(window, key, scancode, action, mods):
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
 
+    #wcisniecie 'E' wlacza poruszanie kamera
     if key == GLFW_KEY_E and action == GLFW_PRESS:
         trybKamery = 1
+    #wcisniecie 'T' wlacza obracanie obiektu
     if key == GLFW_KEY_T and action == GLFW_PRESS:
         trybKamery = 0
 
@@ -196,6 +210,7 @@ def mouse_motion_callback(window, x_pos, y_pos):
     delta_x = x_pos - mouse_x_pos_old
     mouse_x_pos_old = x_pos
 
+    #wyznaczenie wspolrzednych potrzebnych do obrotu wokół osi X
     delta_y = y_pos - mouse_y_pos_old
     mouse_y_pos_old = y_pos
 
@@ -208,6 +223,7 @@ def mouse_button_callback(window, button, action, mods):
     else:
         left_mouse_button_pressed = 0
 
+    #obsluga prawego przycisku myszki
     if button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_PRESS:
         right_mouse_button_pressed = 1
     else:
