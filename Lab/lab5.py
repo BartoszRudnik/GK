@@ -39,6 +39,9 @@ matSpecularChange = 0
 lightAmbientChange = 0
 lightDiffuseChange = 0
 lightSpecularChange = 0
+light2AmbientChange = 0
+light2DiffuseChange = 0
+light2SpecularChange = 0
 moveLightPositionMode = 0
 addPress = 0
 subPress = 0
@@ -234,7 +237,7 @@ def update_viewport(window, width, height):
 def keyboard_key_callback(window, key, scancode, action, mods):
     global addPress, subPress, matAmbientChange, matDiffuseChange, matSpecularChange, add
     global lightAmbientChange, lightDiffuseChange, lightSpecularChange, moveLightPositionMode
-    global firstLight, secondLight
+    global firstLight, secondLight, light2AmbientChange, light2DiffuseChange, light2SpecularChange
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
@@ -262,6 +265,10 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         lightAmbientChange = 0
         lightDiffuseChange = 0
         lightSpecularChange = 0
+        light2AmbientChange = 0
+        light2DiffuseChange = 0
+        light2SpecularChange = 0
+
         add = 0
 
     if key == GLFW_KEY_W and action == GLFW_PRESS:
@@ -271,6 +278,9 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         lightAmbientChange = 0
         lightDiffuseChange = 0
         lightSpecularChange = 0
+        light2AmbientChange = 0
+        light2DiffuseChange = 0
+        light2SpecularChange = 0
         add = 0
 
     if key == GLFW_KEY_E and action == GLFW_PRESS:
@@ -280,6 +290,9 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         lightAmbientChange = 0
         lightDiffuseChange = 0
         lightSpecularChange = 0
+        light2AmbientChange = 0
+        light2DiffuseChange = 0
+        light2SpecularChange = 0
         add = 0
 
     if key == GLFW_KEY_A and action == GLFW_PRESS:
@@ -289,6 +302,9 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         lightAmbientChange = 1
         lightDiffuseChange = 0
         lightSpecularChange = 0
+        light2AmbientChange = 0
+        light2DiffuseChange = 0
+        light2SpecularChange = 0
         add = 0
 
     if key == GLFW_KEY_S and action == GLFW_PRESS:
@@ -298,6 +314,9 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         lightAmbientChange = 0
         lightDiffuseChange = 1
         lightSpecularChange = 0
+        light2AmbientChange = 0
+        light2DiffuseChange = 0
+        light2SpecularChange = 0
         add = 0
 
     if key == GLFW_KEY_D and action == GLFW_PRESS:
@@ -307,6 +326,45 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         lightAmbientChange = 0
         lightDiffuseChange = 0
         lightSpecularChange = 1
+        light2AmbientChange = 0
+        light2DiffuseChange = 0
+        light2SpecularChange = 0
+        add = 0
+
+    if key == GLFW_KEY_F and action == GLFW_PRESS:
+        matAmbientChange = 0
+        matDiffuseChange = 0
+        matSpecularChange = 0
+        lightAmbientChange = 0
+        lightDiffuseChange = 0
+        lightSpecularChange = 0
+        light2AmbientChange = 1
+        light2DiffuseChange = 0
+        light2SpecularChange = 0
+        add = 0
+
+    if key == GLFW_KEY_G and action == GLFW_PRESS:
+        matAmbientChange = 0
+        matDiffuseChange = 0
+        matSpecularChange = 0
+        lightAmbientChange = 0
+        lightDiffuseChange = 0
+        lightSpecularChange = 0
+        light2AmbientChange = 0
+        light2DiffuseChange = 1
+        light2SpecularChange = 0
+        add = 0
+
+    if key == GLFW_KEY_H and action == GLFW_PRESS:
+        matAmbientChange = 0
+        matDiffuseChange = 0
+        matSpecularChange = 0
+        lightAmbientChange = 0
+        lightDiffuseChange = 0
+        lightSpecularChange = 0
+        light2AmbientChange = 0
+        light2DiffuseChange = 0
+        light2SpecularChange = 1
         add = 0
 
     if key == GLFW_KEY_K and action == GLFW_PRESS:
@@ -341,6 +399,13 @@ def colorChange():
         compute(light_diffuse)
     if lightSpecularChange:
         compute(light_specular)
+    if light2AmbientChange:
+        compute(light_ambient1)
+    if light2DiffuseChange:
+        compute(light_diffuse1)
+    if light2SpecularChange:
+        compute(light_specular1)
+    startup()
 
 
 def compute(array):
