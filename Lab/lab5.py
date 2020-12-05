@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import math
 import sys
 
 from OpenGL.GL import *
@@ -6,13 +7,31 @@ from OpenGL.GLU import *
 from glfw.GLFW import *
 
 viewer = [0.0, 0.0, 10.0]
-
+theta3 = 0.0
+phi3 = 0.0
+theta2 = 0.0
+phi2 = 0.0
 theta = 0.0
+phi = 0.0
 pix2angle = 1.0
+
+xLight1 = 0
+yLight1 = 0
+zLight1 = 0
+
+xLight = 0
+yLight = 0
+zLight = 0
+click = 0
 
 left_mouse_button_pressed = 0
 mouse_x_pos_old = 0
+mouse_y_pos_old = 0
 delta_x = 0
+delta_y = 0
+
+firstLight = 0
+secondLight = 0
 
 matAmbientChange = 0
 matDiffuseChange = 0
@@ -20,6 +39,7 @@ matSpecularChange = 0
 lightAmbientChange = 0
 lightDiffuseChange = 0
 lightSpecularChange = 0
+moveLightPositionMode = 0
 addPress = 0
 subPress = 0
 add = 0
@@ -81,7 +101,7 @@ def shutdown():
 
 
 def render(time):
-    global theta
+    global theta, phi, theta2, phi2, theta3, phi3
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -89,10 +109,21 @@ def render(time):
     gluLookAt(viewer[0], viewer[1], viewer[2],
               0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 
-    if left_mouse_button_pressed:
+    if left_mouse_button_pressed and moveLightPositionMode == 0:
         theta += delta_x * pix2angle
+        phi += delta_y * pix2angle
 
-    glRotatef(theta, 0.0, 1.0, 0.0)
+    if firstLight and left_mouse_button_pressed:
+        theta2 += delta_x * pix2angle
+        phi2 += delta_y * pix2angle
+
+    if secondLight and left_mouse_button_pressed:
+        theta3 += delta_x * pix2angle
+        phi3 += delta_y * pix2angle
+
+    if moveLightPositionMode == 0:
+        glRotatef(theta, 0.0, 1.0, 0.0)
+        glRotatef(phi, 1.0, 0.0, 0.0)
 
     if matAmbientChange:
         print('mat_ambient: ', mat_ambient)
@@ -112,9 +143,74 @@ def render(time):
     gluSphere(quadric, 3.0, 10, 10)
     gluDeleteQuadric(quadric)
 
-    startup()
+    moveFirstLight()
+    moveSecondLight()
 
     glFlush()
+
+
+def moveFirstLight():
+    lightLocationFirst()
+    glTranslate(xLight, yLight, zLight)
+
+    quadric = gluNewQuadric()
+    gluQuadricDrawStyle(quadric, GLU_FILL)
+    gluSphere(quadric, 0.2, 10, 10)
+    gluDeleteQuadric(quadric)
+
+    light_position[0] = xLight
+    light_position[1] = yLight
+    light_position[2] = zLight
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+
+    glTranslate(-xLight, -yLight, -zLight)
+
+
+def moveSecondLight():
+    lightLocationSecond()
+    glTranslate(xLight1, yLight1, zLight1)
+
+    quadric = gluNewQuadric()
+    gluQuadricDrawStyle(quadric, GLU_FILL)
+    gluSphere(quadric, 0.2, 10, 10)
+    gluDeleteQuadric(quadric)
+
+    light_position1[0] = xLight1
+    light_position1[1] = yLight1
+    light_position1[2] = zLight1
+
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1)
+
+    glTranslate(-xLight1, -yLight1, -zLight1)
+
+
+def lightLocationFirst():
+    global phi2, theta2, xLight, yLight, zLight
+
+    theta2 = math.fabs(theta2 % 361)
+    phi2 = math.fabs(phi2 % 361)
+
+    thetaRadians = math.radians(theta2)
+    phiRadians = math.radians(phi2)
+
+    xLight = 5.0 * math.cos(thetaRadians) * math.cos(phiRadians)
+    yLight = 5.0 * math.sin(phiRadians)
+    zLight = 5.0 * math.sin(thetaRadians) * math.cos(phiRadians)
+
+
+def lightLocationSecond():
+    global phi3, theta3, xLight1, yLight1, zLight1
+
+    theta3 = math.fabs(theta3 % 361)
+    phi3 = math.fabs(phi3 % 361)
+
+    thetaRadians = math.radians(theta3)
+    phiRadians = math.radians(phi3)
+
+    xLight1 = 5.0 * math.cos(thetaRadians) * math.cos(phiRadians)
+    yLight1 = 5.0 * math.sin(phiRadians) + 1
+    zLight1 = 5.0 * math.sin(thetaRadians) * math.cos(phiRadians) + 1
 
 
 def update_viewport(window, width, height):
@@ -137,9 +233,27 @@ def update_viewport(window, width, height):
 
 def keyboard_key_callback(window, key, scancode, action, mods):
     global addPress, subPress, matAmbientChange, matDiffuseChange, matSpecularChange, add
-    global lightAmbientChange, lightDiffuseChange, lightSpecularChange
+    global lightAmbientChange, lightDiffuseChange, lightSpecularChange, moveLightPositionMode
+    global firstLight, secondLight
+
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
+
+    if key == GLFW_KEY_N and action == GLFW_PRESS:
+        firstLight = 1
+        secondLight = 0
+
+    if key == GLFW_KEY_M and action == GLFW_PRESS:
+        firstLight = 0
+        secondLight = 1
+
+    if key == GLFW_KEY_Z and action == GLFW_PRESS:
+        moveLightPositionMode = 1
+
+    if key == GLFW_KEY_X and action == GLFW_PRESS:
+        moveLightPositionMode = 0
+        firstLight = 0
+        secondLight = 0
 
     if key == GLFW_KEY_Q and action == GLFW_PRESS:
         matAmbientChange = 1
@@ -240,11 +354,14 @@ def compute(array):
 
 
 def mouse_motion_callback(window, x_pos, y_pos):
-    global delta_x
-    global mouse_x_pos_old
+    global delta_x, delta_y
+    global mouse_x_pos_old, mouse_y_pos_old
 
     delta_x = x_pos - mouse_x_pos_old
     mouse_x_pos_old = x_pos
+
+    delta_y = y_pos - mouse_y_pos_old
+    mouse_y_pos_old = y_pos
 
 
 def mouse_button_callback(window, button, action, mods):
