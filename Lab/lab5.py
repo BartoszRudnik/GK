@@ -33,15 +33,24 @@ delta_y = 0
 firstLight = 0
 secondLight = 0
 
-matAmbientChange = 0
-matDiffuseChange = 0
-matSpecularChange = 0
-lightAmbientChange = 0
-lightDiffuseChange = 0
-lightSpecularChange = 0
-light2AmbientChange = 0
-light2DiffuseChange = 0
-light2SpecularChange = 0
+lightAmbientChangeR = 0
+lightAmbientChangeG = 0
+lightAmbientChangeB = 0
+lightDiffuseChangeR = 0
+lightDiffuseChangeG = 0
+lightDiffuseChangeB = 0
+lightSpecularChangeR = 0
+lightSpecularChangeG = 0
+lightSpecularChangeB = 0
+light2AmbientChangeR = 0
+light2AmbientChangeG = 0
+light2AmbientChangeB = 0
+light2DiffuseChangeR = 0
+light2DiffuseChangeG = 0
+light2DiffuseChangeB = 0
+light2SpecularChangeR = 0
+light2SpecularChangeG = 0
+light2SpecularChangeB = 0
 moveLightPositionMode = 0
 addPress = 0
 subPress = 0
@@ -128,19 +137,6 @@ def render(time):
         glRotatef(theta, 0.0, 1.0, 0.0)
         glRotatef(phi, 1.0, 0.0, 0.0)
 
-    if matAmbientChange:
-        print('mat_ambient: ', mat_ambient)
-    if matDiffuseChange:
-        print('mat_diffuse: ', mat_diffuse)
-    if matSpecularChange:
-        print('mat_specular: ', mat_specular)
-    if lightAmbientChange:
-        print('light_ambient: ', light_ambient)
-    if lightDiffuseChange:
-        print('light_diffuse: ', light_diffuse)
-    if lightSpecularChange:
-        print('light_specular: ', light_specular)
-
     quadric = gluNewQuadric()
     gluQuadricDrawStyle(quadric, GLU_FILL)
     gluSphere(quadric, 3.0, 10, 10)
@@ -158,7 +154,7 @@ def moveFirstLight():
 
     quadric = gluNewQuadric()
     gluQuadricDrawStyle(quadric, GLU_FILL)
-    gluSphere(quadric, 0.2, 10, 10)
+    gluSphere(quadric, 0.5, 6, 5)
     gluDeleteQuadric(quadric)
 
     light_position[0] = xLight
@@ -172,20 +168,20 @@ def moveFirstLight():
 
 def moveSecondLight():
     lightLocationSecond()
-    glTranslate(xLight1, yLight1, zLight1)
+    glTranslate(-xLight1, -yLight1, -zLight1)
 
     quadric = gluNewQuadric()
     gluQuadricDrawStyle(quadric, GLU_FILL)
-    gluSphere(quadric, 0.2, 10, 10)
+    gluSphere(quadric, 0.5, 6, 5)
     gluDeleteQuadric(quadric)
 
-    light_position1[0] = xLight1
-    light_position1[1] = yLight1
-    light_position1[2] = zLight1
+    light_position1[0] = -xLight1
+    light_position1[1] = -yLight1
+    light_position1[2] = -zLight1
 
     glLightfv(GL_LIGHT1, GL_POSITION, light_position1)
 
-    glTranslate(-xLight1, -yLight1, -zLight1)
+    glTranslate(xLight1, yLight1, zLight1)
 
 
 def lightLocationFirst():
@@ -212,8 +208,8 @@ def lightLocationSecond():
     phiRadians = math.radians(phi3)
 
     xLight1 = 5.0 * math.cos(thetaRadians) * math.cos(phiRadians)
-    yLight1 = 5.0 * math.sin(phiRadians) + 1
-    zLight1 = 5.0 * math.sin(thetaRadians) * math.cos(phiRadians) + 1
+    yLight1 = 5.0 * math.sin(phiRadians)
+    zLight1 = 5.0 * math.sin(thetaRadians) * math.cos(phiRadians)
 
 
 def update_viewport(window, width, height):
@@ -235,9 +231,11 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
-    global addPress, subPress, matAmbientChange, matDiffuseChange, matSpecularChange, add
-    global lightAmbientChange, lightDiffuseChange, lightSpecularChange, moveLightPositionMode
-    global firstLight, secondLight, light2AmbientChange, light2DiffuseChange, light2SpecularChange
+    global addPress, subPress, add, moveLightPositionMode
+    global lightAmbientChangeR, lightAmbientChangeG, lightAmbientChangeB, light2AmbientChangeR, light2AmbientChangeB, light2AmbientChangeG
+    global lightDiffuseChangeR, lightDiffuseChangeG, lightDiffuseChangeB, light2DiffuseChangeR, light2DiffuseChangeB, light2DiffuseChangeG
+    global lightSpecularChangeR, lightSpecularChangeG, lightSpecularChangeB, light2SpecularChangeR, light2SpecularChangeB, light2SpecularChangeG
+    global firstLight, secondLight
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
@@ -258,113 +256,194 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         firstLight = 0
         secondLight = 0
 
-    if key == GLFW_KEY_Q and action == GLFW_PRESS:
-        matAmbientChange = 1
-        matDiffuseChange = 0
-        matSpecularChange = 0
-        lightAmbientChange = 0
-        lightDiffuseChange = 0
-        lightSpecularChange = 0
-        light2AmbientChange = 0
-        light2DiffuseChange = 0
-        light2SpecularChange = 0
+    if key == GLFW_KEY_1 and action == GLFW_PRESS:
+        lightAmbientChangeR = 1
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 1
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 0
 
         add = 0
 
-    if key == GLFW_KEY_W and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 1
-        matSpecularChange = 0
-        lightAmbientChange = 0
-        lightDiffuseChange = 0
-        lightSpecularChange = 0
-        light2AmbientChange = 0
-        light2DiffuseChange = 0
-        light2SpecularChange = 0
+    if key == GLFW_KEY_2 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 1
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 1
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 0
         add = 0
 
-    if key == GLFW_KEY_E and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 0
-        matSpecularChange = 1
-        lightAmbientChange = 0
-        lightDiffuseChange = 0
-        lightSpecularChange = 0
-        light2AmbientChange = 0
-        light2DiffuseChange = 0
-        light2SpecularChange = 0
+    if key == GLFW_KEY_3 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 1
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 1
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 0
         add = 0
 
-    if key == GLFW_KEY_A and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 0
-        matSpecularChange = 0
-        lightAmbientChange = 1
-        lightDiffuseChange = 0
-        lightSpecularChange = 0
-        light2AmbientChange = 0
-        light2DiffuseChange = 0
-        light2SpecularChange = 0
+    if key == GLFW_KEY_4 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 1
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 1
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 0
         add = 0
 
-    if key == GLFW_KEY_S and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 0
-        matSpecularChange = 0
-        lightAmbientChange = 0
-        lightDiffuseChange = 1
-        lightSpecularChange = 0
-        light2AmbientChange = 0
-        light2DiffuseChange = 0
-        light2SpecularChange = 0
+    if key == GLFW_KEY_5 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 1
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 1
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 0
         add = 0
 
-    if key == GLFW_KEY_D and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 0
-        matSpecularChange = 0
-        lightAmbientChange = 0
-        lightDiffuseChange = 0
-        lightSpecularChange = 1
-        light2AmbientChange = 0
-        light2DiffuseChange = 0
-        light2SpecularChange = 0
+    if key == GLFW_KEY_6 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 1
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 1
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 0
         add = 0
 
-    if key == GLFW_KEY_F and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 0
-        matSpecularChange = 0
-        lightAmbientChange = 0
-        lightDiffuseChange = 0
-        lightSpecularChange = 0
-        light2AmbientChange = 1
-        light2DiffuseChange = 0
-        light2SpecularChange = 0
+    if key == GLFW_KEY_7 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 1
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 1
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 0
         add = 0
 
-    if key == GLFW_KEY_G and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 0
-        matSpecularChange = 0
-        lightAmbientChange = 0
-        lightDiffuseChange = 0
-        lightSpecularChange = 0
-        light2AmbientChange = 0
-        light2DiffuseChange = 1
-        light2SpecularChange = 0
+    if key == GLFW_KEY_8 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 1
+        lightSpecularChangeB = 0
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 1
+        light2SpecularChangeB = 0
         add = 0
 
-    if key == GLFW_KEY_H and action == GLFW_PRESS:
-        matAmbientChange = 0
-        matDiffuseChange = 0
-        matSpecularChange = 0
-        lightAmbientChange = 0
-        lightDiffuseChange = 0
-        lightSpecularChange = 0
-        light2AmbientChange = 0
-        light2DiffuseChange = 0
-        light2SpecularChange = 1
+    if key == GLFW_KEY_9 and action == GLFW_PRESS:
+        lightAmbientChangeR = 0
+        lightAmbientChangeG = 0
+        lightAmbientChangeB = 0
+        lightDiffuseChangeR = 0
+        lightDiffuseChangeG = 0
+        lightDiffuseChangeB = 0
+        lightSpecularChangeR = 0
+        lightSpecularChangeG = 0
+        lightSpecularChangeB = 1
+        light2AmbientChangeR = 0
+        light2AmbientChangeG = 0
+        light2AmbientChangeB = 0
+        light2DiffuseChangeR = 0
+        light2DiffuseChangeG = 0
+        light2DiffuseChangeB = 0
+        light2SpecularChangeR = 0
+        light2SpecularChangeG = 0
+        light2SpecularChangeB = 1
         add = 0
 
     if key == GLFW_KEY_K and action == GLFW_PRESS:
@@ -387,35 +466,56 @@ def keyboard_key_callback(window, key, scancode, action, mods):
 
 
 def colorChange():
-    if matAmbientChange:
-        compute(mat_ambient)
-    if matDiffuseChange:
-        compute(mat_diffuse)
-    if matSpecularChange:
-        compute(mat_specular)
-    if lightAmbientChange:
-        compute(light_ambient)
-    if lightDiffuseChange:
-        compute(light_diffuse)
-    if lightSpecularChange:
-        compute(light_specular)
-    if light2AmbientChange:
-        compute(light_ambient1)
-    if light2DiffuseChange:
-        compute(light_diffuse1)
-    if light2SpecularChange:
-        compute(light_specular1)
+    if firstLight:
+        if lightAmbientChangeR:
+            compute(light_ambient, 0)
+        if lightAmbientChangeG:
+            compute(light_ambient, 1)
+        if lightAmbientChangeB:
+            compute(light_ambient, 2)
+        if lightDiffuseChangeR:
+            compute(light_diffuse, 0)
+        if lightDiffuseChangeG:
+            compute(light_diffuse, 1)
+        if lightDiffuseChangeB:
+            compute(light_diffuse, 2)
+        if lightSpecularChangeR:
+            compute(light_specular, 0)
+        if lightSpecularChangeG:
+            compute(light_specular, 1)
+        if lightSpecularChangeB:
+            compute(light_specular, 2)
+    if secondLight:
+        if light2AmbientChangeR:
+            compute(light_ambient1, 0)
+        if light2AmbientChangeG:
+            compute(light_ambient1, 1)
+        if light2AmbientChangeB:
+            compute(light_ambient1, 2)
+        if light2DiffuseChangeR:
+            compute(light_diffuse1, 0)
+        if light2DiffuseChangeG:
+            compute(light_diffuse1, 1)
+        if light2DiffuseChangeB:
+            compute(light_diffuse1, 2)
+        if light2SpecularChangeR:
+            compute(light_specular1, 0)
+        if light2SpecularChangeG:
+            compute(light_specular1, 1)
+        if light2SpecularChangeB:
+            compute(light_specular1, 2)
+
     startup()
 
 
-def compute(array):
-    for i in range(len(array)):
-        if 0 <= array[i] + add <= 1:
-            array[i] += add
-        elif array[i] < 1 and add == 0.1:
-            array[i] += 1 - array[i]
-        elif array[i] > 0 and add == -0.1:
-            array[i] -= array[i]
+def compute(array, i):
+    if 0 <= array[i] + add <= 1:
+        array[i] += add
+    elif array[i] < 1 and add == 0.1:
+        array[i] += 1 - array[i]
+    elif array[i] > 0 and add == -0.1:
+        array[i] -= array[i]
+    print(array)
 
 
 def mouse_motion_callback(window, x_pos, y_pos):

@@ -166,11 +166,11 @@ def computeEgg(N):
             vectorLength = math.sqrt(
                 math.pow(vector[i][j][0], 2) + math.pow(vector[i][j][1], 2) + math.pow(vector[i][j][2], 2))
 
-            if i < N / 2:
+            if N / 2 > i > 0:
                 vector[i][j][0] /= vectorLength
                 vector[i][j][1] /= vectorLength
                 vector[i][j][2] /= vectorLength
-            elif i > N / 2:
+            elif N / 2 < i < N:
                 vector[i][j][0] /= -vectorLength
                 vector[i][j][1] /= -vectorLength
                 vector[i][j][2] /= -vectorLength
