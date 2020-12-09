@@ -7,6 +7,19 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from glfw.GLFW import *
 
+# INSTRUKCJA:
+# ----------------------------------------------
+# Wlaczenie trybu poruszania swiatlami -> 'Z'
+# Poruszanie pierwszym swiatlem -> 'N'
+# Poruszanie drugim swiatlem -> 'M'
+# Wylaczenie trybu poruszania swiatlami -> 'X'
+# Wybranie skladowej koloru do zmiany -> [1-9]
+# Wybranie zmiany koloru dla pierwszego swiatla -> 'N'
+# Wybranie zmiany koloru dla drugiego swiatla -> 'M'
+# Zwiekszenie wartosci skladowej -> 'K'
+# Zmniejszenie wartosci skladowej -> 'L'
+# --------------------------------------------
+
 N = 30
 
 triangleColors = np.random.rand(N, N, 3)
