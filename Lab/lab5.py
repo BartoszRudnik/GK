@@ -2,9 +2,14 @@
 import math
 import sys
 
+import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from glfw.GLFW import *
+
+N = 30
+
+triangleColors = np.random.rand(N, N, 3)
 
 viewer = [0.0, 0.0, 10.0]
 theta3 = 0.0
@@ -32,6 +37,7 @@ delta_y = 0
 
 firstLight = 0
 secondLight = 0
+showVectors = 0
 
 lightAmbientChangeR = 0
 lightAmbientChangeG = 0
@@ -137,10 +143,7 @@ def render(time):
         glRotatef(theta, 0.0, 1.0, 0.0)
         glRotatef(phi, 1.0, 0.0, 0.0)
 
-    quadric = gluNewQuadric()
-    gluQuadricDrawStyle(quadric, GLU_FILL)
-    gluSphere(quadric, 3.0, 10, 10)
-    gluDeleteQuadric(quadric)
+    trianglesEgg()
 
     moveFirstLight()
     moveSecondLight()
@@ -231,7 +234,7 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
-    global addPress, subPress, add, moveLightPositionMode
+    global addPress, subPress, add, moveLightPositionMode, showVectors
     global lightAmbientChangeR, lightAmbientChangeG, lightAmbientChangeB, light2AmbientChangeR, light2AmbientChangeB, light2AmbientChangeG
     global lightDiffuseChangeR, lightDiffuseChangeG, lightDiffuseChangeB, light2DiffuseChangeR, light2DiffuseChangeB, light2DiffuseChangeG
     global lightSpecularChangeR, lightSpecularChangeG, lightSpecularChangeB, light2SpecularChangeR, light2SpecularChangeB, light2SpecularChangeG
@@ -239,6 +242,12 @@ def keyboard_key_callback(window, key, scancode, action, mods):
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
+
+    if key == GLFW_KEY_T and action == GLFW_PRESS:
+        showVectors = 1
+
+    if key == GLFW_KEY_Y and action == GLFW_PRESS:
+        showVectors = 0
 
     if key == GLFW_KEY_N and action == GLFW_PRESS:
         firstLight = 1
@@ -536,6 +545,121 @@ def mouse_button_callback(window, button, action, mods):
         left_mouse_button_pressed = 1
     else:
         left_mouse_button_pressed = 0
+
+
+def trianglesEgg():
+    tab, vector = computeEgg(N)
+
+    glBegin(GL_TRIANGLES)
+
+    for i in range(N - 1):
+        for j in range(N - 1):
+
+            # element (i,j) łaczony jest z elementami (i + 1, j) oraz (i, j + 1)
+            glNormal3f(vector[i, j, 0], vector[i, j, 1], vector[i, j, 2])
+            glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
+
+            glNormal3f(vector[i + 1, j, 0], vector[i + 1, j, 1], vector[i + 1, j, 2])
+            glVertex3f(tab[i + 1, j, 0], tab[i + 1, j, 1], tab[i + 1, j, 2])
+
+            if j == N - 2:
+                glNormal3f(vector[i, j + 1, 0], vector[i, j + 1, 1], vector[i, j + 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+            else:
+                glNormal3f(vector[i, j + 1, 0], vector[i, j + 1, 1], vector[i, j + 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+
+            # wyznaczenie trojkata dopelniajacego
+            if j == N - 2:
+                glNormal3f(vector[i + 1, j + 1, 0], vector[i + 1, j + 1, 1], vector[i + 1, j + 1, 2])
+                glVertex3f(tab[i + 1, j + 1, 0], tab[i + 1, j + 1, 1], tab[i + 1, j + 1, 2])
+            else:
+                glNormal3f(vector[i + 1, j + 1, 0], vector[i + 1, j + 1, 1], vector[i + 1, j + 1, 2])
+                glVertex3f(tab[i + 1, j + 1, 0], tab[i + 1, j + 1, 1], tab[i + 1, j + 1, 2])
+
+            glNormal3f(vector[i + 1, j, 0], vector[i + 1, j, 1], vector[i + 1, j, 2])
+            glVertex3f(tab[i + 1, j, 0], tab[i + 1, j, 1], tab[i + 1, j, 2])
+
+            if j == N - 2:
+                glNormal3f(vector[i, j + 1, 0], vector[i, j + 1, 1], vector[i, j + 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+            else:
+                glNormal3f(vector[i, j + 1, 0], vector[i, j + 1, 1], vector[i, j + 1, 2])
+                glVertex3f(tab[i, j + 1, 0], tab[i, j + 1, 1], tab[i, j + 1, 2])
+
+    glEnd()
+
+    if showVectors:
+        glBegin(GL_LINES)
+
+        for i in range(N - 1):
+            for j in range(N - 1):
+                glVertex3f(tab[i, j, 0], tab[i, j, 1], tab[i, j, 2])
+                glVertex3f(tab[i, j, 0] + vector[i, j, 0], tab[i, j, 1] + vector[i, j, 1],
+                           tab[i, j, 2] + vector[i, j, 2])
+
+        glEnd()
+
+
+def computeEgg(N):
+    tab = np.zeros((N, N, 3))
+    vector = np.zeros((N, N, 3))
+
+    tmp = 1 / (N - 1)
+
+    for i in range(N):
+        # wyznaczenie nowej wartosci U z przedzialu [0,1]
+        U = i * tmp
+        for j in range(N):
+            # wyznaczenie nowej wartosci V z przedzialu [0,1]
+            V = j * tmp
+
+            # wyznaczenie wspolrzednej X,Y i Z na podstawie wzoru
+            X = (-90 * pow(U, 5) + 225 * pow(U, 4) - 270 * pow(U, 3) + 180 * pow(U, 2) - 45 * U) * math.cos(math.pi * V)
+            Y = 160 * pow(U, 4) - 320 * pow(U, 3) + 160 * pow(U, 2)
+            Z = (-90 * pow(U, 5) + 225 * pow(U, 4) - 270 * pow(U, 3) + 180 * pow(U, 2) - 45 * U) * math.sin(math.pi * V)
+
+            tab[i, j, 0] = X
+            # przesuniecie wspolrzednej Y tak by model znalazl sie na srodku ukladu wspolrzednych
+            tab[i, j, 1] = Y - 5
+            tab[i, j, 2] = Z
+
+            uX = (-450 * pow(U, 4) + 900 * pow(U, 3) - 810 * pow(U, 2) + 360 * U - 45) * math.cos(math.pi * V)
+            vX = math.pi * (90 * pow(U, 5) - 225 * pow(U, 4) + 270 * pow(U, 3) - 180 * pow(U, 2) + 45 * U) * math.sin(
+                math.pi * V)
+            uY = 640 * math.pow(U, 3) - 960 * math.pow(U, 2) + 320 * U
+            vY = 0
+            uZ = (-450 * math.pow(U, 4) + 900 * math.pow(U, 3) - 810 * math.pow(U, 2) + 360 * U - 45) * math.sin(
+                math.pi * V)
+            vZ = -math.pi * (90 * math.pow(U, 5) - 225 * math.pow(U, 4) + 270 * math.pow(U, 3) - 180 * math.pow(U,
+                                                                                                                2) + 45 * U) * math.cos(
+                math.pi * V)
+
+            vector[i][j][0] = uY * vZ - uZ * vY
+            vector[i][j][1] = uZ * vX - uX * vZ
+            vector[i][j][2] = uX * vY - uY * vX
+
+            vectorLength = math.sqrt(
+                math.pow(vector[i][j][0], 2) + math.pow(vector[i][j][1], 2) + math.pow(vector[i][j][2], 2))
+
+            if N / 2 > i > 0:
+                vector[i][j][0] /= vectorLength
+                vector[i][j][1] /= vectorLength
+                vector[i][j][2] /= vectorLength
+            elif N / 2 < i < N:
+                vector[i][j][0] /= -vectorLength
+                vector[i][j][1] /= -vectorLength
+                vector[i][j][2] /= -vectorLength
+            elif i == N or i == 0:
+                vector[i][j][0] = 0
+                vector[i][j][1] = -1
+                vector[i][j][2] = 0
+            else:
+                vector[i][j][0] = 0
+                vector[i][j][1] = 1
+                vector[i][j][2] = 0
+
+    return tab, vector
 
 
 def main():
