@@ -18,7 +18,12 @@ mouse_y_pos_old = 0
 delta_x = 0
 delta_y = 0
 
-wallTriangle1 = 0
+hideTriangle = 0
+wallTriangle1 = 1
+wallTriangle2 = 1
+wallTriangle3 = 1
+wallTriangle4 = 1
+count = 0
 
 firstTexture = 1
 secondTexture = 0
@@ -148,6 +153,39 @@ def drawRectangle():
     glEnd()
 
 
+def chooseTriangle():
+    global count
+    global wallTriangle1, wallTriangle2, wallTriangle3, wallTriangle4
+
+    count += 1
+
+    if count % 5 == 0:
+        wallTriangle1 = 1
+        wallTriangle2 = 1
+        wallTriangle3 = 1
+        wallTriangle4 = 1
+    if count % 5 == 1:
+        wallTriangle1 = 0
+        wallTriangle2 = 1
+        wallTriangle3 = 1
+        wallTriangle4 = 1
+    if count % 5 == 2:
+        wallTriangle1 = 1
+        wallTriangle2 = 0
+        wallTriangle3 = 1
+        wallTriangle4 = 1
+    if count % 5 == 3:
+        wallTriangle1 = 1
+        wallTriangle2 = 1
+        wallTriangle3 = 0
+        wallTriangle4 = 1
+    if count % 5 == 4:
+        wallTriangle1 = 1
+        wallTriangle2 = 1
+        wallTriangle3 = 1
+        wallTriangle4 = 0
+
+
 def drawPyramid():
     glBegin(GL_TRIANGLES)
 
@@ -169,7 +207,7 @@ def drawPyramid():
     glTexCoord2f(0.0, 1.0)
     glVertex3f(-5.0, 5.0, 0.0)
 
-    if not wallTriangle1:
+    if wallTriangle1:
         glTexCoord2f(1.0, 0.0)
         glVertex3f(5.0, -5.0, 0.0)
         glTexCoord2f(1.0, 1.0)
@@ -177,26 +215,29 @@ def drawPyramid():
         glTexCoord2f(0.5, 0.5)
         glVertex3f(0.0, 0.0, 3.0)
 
-    glTexCoord2f(1.0, 1.0)
-    glVertex3f(5.0, 5.0, 0.0)
-    glTexCoord2f(0.0, 1.0)
-    glVertex3f(-5.0, 5.0, 0.0)
-    glTexCoord2f(0.5, 0.5)
-    glVertex3f(0.0, 0.0, 3.0)
+    if wallTriangle2:
+        glTexCoord2f(1.0, 1.0)
+        glVertex3f(5.0, 5.0, 0.0)
+        glTexCoord2f(0.0, 1.0)
+        glVertex3f(-5.0, 5.0, 0.0)
+        glTexCoord2f(0.5, 0.5)
+        glVertex3f(0.0, 0.0, 3.0)
 
-    glTexCoord2f(0.0, 1.0)
-    glVertex3f(-5.0, 5.0, 0.0)
-    glTexCoord2f(0.0, 0.0)
-    glVertex3f(-5.0, -5.0, 0.0)
-    glTexCoord2f(0.5, 0.5)
-    glVertex3f(0.0, 0.0, 3.0)
+    if wallTriangle3:
+        glTexCoord2f(0.0, 1.0)
+        glVertex3f(-5.0, 5.0, 0.0)
+        glTexCoord2f(0.0, 0.0)
+        glVertex3f(-5.0, -5.0, 0.0)
+        glTexCoord2f(0.5, 0.5)
+        glVertex3f(0.0, 0.0, 3.0)
 
-    glTexCoord2f(0.0, 0.0)
-    glVertex3f(-5.0, -5.0, 0.0)
-    glTexCoord2f(1.0, 0.0)
-    glVertex3f(5.0, -5.0, 0.0)
-    glTexCoord2f(0.5, 0.5)
-    glVertex3f(0.0, 0.0, 3.0)
+    if wallTriangle4:
+        glTexCoord2f(0.0, 0.0)
+        glVertex3f(-5.0, -5.0, 0.0)
+        glTexCoord2f(1.0, 0.0)
+        glVertex3f(5.0, -5.0, 0.0)
+        glTexCoord2f(0.5, 0.5)
+        glVertex3f(0.0, 0.0, 3.0)
 
     glEnd()
 
@@ -240,16 +281,15 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
-    global wallTriangle1
+    global hideTriangle
     global firstTexture, secondTexture, thirdTexture
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
 
-    if key == GLFW_KEY_W and action == GLFW_PRESS and wallTriangle1:
-        wallTriangle1 = 0
-    elif key == GLFW_KEY_W and action == GLFW_PRESS and not wallTriangle1:
-        wallTriangle1 = 1
+    if key == GLFW_KEY_W and action == GLFW_PRESS:
+        hideTriangle = 1
+        chooseTriangle()
 
     if key == GLFW_KEY_A and action == GLFW_PRESS:
         firstTexture = 1
