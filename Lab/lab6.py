@@ -20,6 +20,10 @@ delta_y = 0
 
 wallTriangle1 = 0
 
+firstTexture = 1
+secondTexture = 0
+thirdTexture = 0
+
 mat_ambient = [1.0, 1.0, 1.0, 1.0]
 mat_diffuse = [1.0, 1.0, 1.0, 1.0]
 mat_specular = [1.0, 1.0, 1.0, 1.0]
@@ -34,8 +38,14 @@ att_constant = 1.0
 att_linear = 0.05
 att_quadratic = 0.001
 
+image_1 = 0
+image_2 = 0
+image_3 = 0
+
 
 def startup():
+    global image_1, image_2, image_3
+
     update_viewport(None, 400, 400)
     glClearColor(0.0, 0.0, 0.0, 1.0)
     glEnable(GL_DEPTH_TEST)
@@ -64,11 +74,13 @@ def startup():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
-    image = Image.open("tekstura.tga")
+    image_1 = Image.open("tekstura.tga")
+    image_2 = Image.open("Texture_1.TGA")
+    image_3 = Image.open("Texture_2.TGA")
 
     glTexImage2D(
-        GL_TEXTURE_2D, 0, 3, image.size[0], image.size[1], 0,
-        GL_RGB, GL_UNSIGNED_BYTE, image.tobytes("raw", "RGB", 0, -1)
+        GL_TEXTURE_2D, 0, 3, image_1.size[0], image_1.size[1], 0,
+        GL_RGB, GL_UNSIGNED_BYTE, image_1.tobytes("raw", "RGB", 0, -1)
     )
 
 
@@ -91,6 +103,8 @@ def render(time):
 
     glRotatef(theta, 0.0, 1.0, 0.0)
     glRotatef(phi, 1.0, 0.0, 0.0)
+
+    changeTexture()
 
     # drawTriangle()
     # drawRectangle()
@@ -187,6 +201,26 @@ def drawPyramid():
     glEnd()
 
 
+def changeTexture():
+    if firstTexture:
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, 3, image_1.size[0], image_1.size[1], 0,
+            GL_RGB, GL_UNSIGNED_BYTE, image_1.tobytes("raw", "RGB", 0, -1)
+        )
+
+    if secondTexture:
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, 3, image_2.size[0], image_2.size[1], 0,
+            GL_RGB, GL_UNSIGNED_BYTE, image_2.tobytes("raw", "RGB", 0, -1)
+        )
+
+    if thirdTexture:
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, 3, image_3.size[0], image_3.size[1], 0,
+            GL_RGB, GL_UNSIGNED_BYTE, image_3.tobytes("raw", "RGB", 0, -1)
+        )
+
+
 def update_viewport(window, width, height):
     global pix2angle
     pix2angle = 360.0 / width
@@ -207,6 +241,7 @@ def update_viewport(window, width, height):
 
 def keyboard_key_callback(window, key, scancode, action, mods):
     global wallTriangle1
+    global firstTexture, secondTexture, thirdTexture
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
@@ -215,6 +250,21 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         wallTriangle1 = 0
     elif key == GLFW_KEY_W and action == GLFW_PRESS and not wallTriangle1:
         wallTriangle1 = 1
+
+    if key == GLFW_KEY_A and action == GLFW_PRESS:
+        firstTexture = 1
+        secondTexture = 0
+        thirdTexture = 0
+
+    if key == GLFW_KEY_S and action == GLFW_PRESS:
+        firstTexture = 0
+        secondTexture = 1
+        thirdTexture = 0
+
+    if key == GLFW_KEY_D and action == GLFW_PRESS:
+        firstTexture = 0
+        secondTexture = 0
+        thirdTexture = 1
 
 
 def mouse_motion_callback(window, x_pos, y_pos):
