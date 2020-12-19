@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
+import math
 import sys
 
+import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from PIL import Image
 from glfw.GLFW import *
+
+N = 50
+
+triangleColors = np.random.rand(N, N, 3)
 
 viewer = [0.0, 0.0, 10.0]
 
@@ -17,6 +23,11 @@ mouse_x_pos_old = 0
 mouse_y_pos_old = 0
 delta_x = 0
 delta_y = 0
+
+showTriangle = 1
+showRectangle = 0
+showPyramid = 0
+showEgg = 0
 
 hideTriangle = 0
 wallTriangle1 = 1
@@ -111,9 +122,17 @@ def render(time):
 
     changeTexture()
 
-    # drawTriangle()
-    # drawRectangle()
-    drawPyramid()
+    if showTriangle:
+        drawTriangle()
+
+    if showRectangle:
+        drawRectangle()
+
+    if showPyramid:
+        drawPyramid()
+
+    if showEgg:
+        trianglesEgg()
 
     glFlush()
 
@@ -242,6 +261,82 @@ def drawPyramid():
     glEnd()
 
 
+def computeEgg(N):
+    tab = np.zeros((N, N, 3))
+    tabTextures = np.zeros((N, N, 2))
+
+    tmp = 1 / (N - 1)
+
+    for i in range(N):
+        U = i * tmp
+        for j in range(N):
+            V = j * tmp
+
+            X = (-90 * pow(U, 5) + 225 * pow(U, 4) - 270 * pow(U, 3) + 180 * pow(U, 2) - 45 * U) * math.cos(math.pi * V)
+            Y = 160 * pow(U, 4) - 320 * pow(U, 3) + 160 * pow(U, 2)
+            Z = (-90 * pow(U, 5) + 225 * pow(U, 4) - 270 * pow(U, 3) + 180 * pow(U, 2) - 45 * U) * math.sin(math.pi * V)
+
+            tab[i, j, 0] = X
+            tab[i, j, 1] = Y - 5
+            tab[i, j, 2] = Z
+
+            tabTextures[i, j, 0] = V
+            tabTextures[i, j, 1] = U
+
+    return tab, tabTextures
+
+
+def trianglesEgg():
+    tab, tabTextures = computeEgg(N)
+
+    glBegin(GL_TRIANGLES)
+
+    for i in range(N - 1):
+        for j in range(N - 1):
+
+            if i <= N / 2:
+
+                glTexCoord2f(tabTextures[i][j][0], tabTextures[i][j][1])
+                glVertex3f(tab[i][j][0], tab[i][j][1], tab[i][j][2])
+
+                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
+
+                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
+                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
+
+                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
+
+                glTexCoord2f(tabTextures[i + 1][j + 1][0], tabTextures[i + 1][j + 1][1])
+                glVertex3f(tab[i + 1][j + 1][0], tab[i + 1][j + 1][1], tab[i + 1][j + 1][2])
+
+                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
+                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
+
+            else:
+
+                glTexCoord2f(tabTextures[i][j][0], tabTextures[i][j][1])
+                glVertex3f(tab[i][j][0], tab[i][j][1], tab[i][j][2])
+
+                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
+                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
+
+                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
+
+                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
+
+                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
+                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
+
+                glTexCoord2f(tabTextures[i + 1][j + 1][0], tabTextures[i + 1][j + 1][1])
+                glVertex3f(tab[i + 1][j + 1][0], tab[i + 1][j + 1][1], tab[i + 1][j + 1][2])
+
+    glEnd()
+
+
 def changeTexture():
     if firstTexture:
         glTexImage2D(
@@ -283,6 +378,7 @@ def update_viewport(window, width, height):
 def keyboard_key_callback(window, key, scancode, action, mods):
     global hideTriangle
     global firstTexture, secondTexture, thirdTexture
+    global showTriangle, showRectangle, showPyramid, showEgg
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
@@ -305,6 +401,30 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         firstTexture = 0
         secondTexture = 0
         thirdTexture = 1
+
+    if key == GLFW_KEY_Z and action == GLFW_PRESS:
+        showTriangle = 1
+        showRectangle = 0
+        showPyramid = 0
+        showEgg = 0
+
+    if key == GLFW_KEY_X and action == GLFW_PRESS:
+        showTriangle = 0
+        showRectangle = 1
+        showPyramid = 0
+        showEgg = 0
+
+    if key == GLFW_KEY_C and action == GLFW_PRESS:
+        showTriangle = 0
+        showRectangle = 0
+        showPyramid = 1
+        showEgg = 0
+
+    if key == GLFW_KEY_V and action == GLFW_PRESS:
+        showTriangle = 0
+        showRectangle = 0
+        showPyramid = 0
+        showEgg = 1
 
 
 def mouse_motion_callback(window, x_pos, y_pos):
