@@ -8,7 +8,7 @@ from OpenGL.GLU import *
 from PIL import Image
 from glfw.GLFW import *
 
-N = 50
+N = 25
 
 triangleColors = np.random.rand(N, N, 3)
 
@@ -207,24 +207,6 @@ def chooseTriangle():
 
 def drawPyramid():
     glBegin(GL_TRIANGLES)
-
-    glTexCoord2f(0.0, 1.0)
-    glVertex3f(-5.0, 5.0, 0.0)
-
-    glTexCoord2f(0.0, 0.0)
-    glVertex3f(-5.0, -5.0, 0.0)
-
-    glTexCoord2f(1.0, 0.0)
-    glVertex3f(5.0, -5.0, 0.0)
-
-    glTexCoord2f(1.0, 0.0)
-    glVertex3f(5.0, -5.0, 0.0)
-
-    glTexCoord2f(1.0, 1.0)
-    glVertex3f(5.0, 5.0, 0.0)
-
-    glTexCoord2f(0.0, 1.0)
-    glVertex3f(-5.0, 5.0, 0.0)
 
     if wallTriangle1:
         glTexCoord2f(1.0, 0.0)
