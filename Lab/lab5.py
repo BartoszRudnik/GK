@@ -188,10 +188,10 @@ def moveFirstLight():
     light_position[1] = yLight
     light_position[2] = zLight
 
-    #wywolanie instrukcji obliczajacej kolor swiatla
+    # wywolanie instrukcji obliczajacej kolor swiatla
     glLightfv(GL_LIGHT0, GL_POSITION, light_position)
 
-    #odwrocenie transformacji
+    # odwrocenie transformacji
     glTranslate(-xLight, -yLight, -zLight)
 
 
@@ -215,7 +215,7 @@ def moveSecondLight():
     # wywolanie instrukcji obliczajacej kolor swiatla
     glLightfv(GL_LIGHT1, GL_POSITION, light_position1)
 
-    #odwrocenie transformacji
+    # odwrocenie transformacji
     glTranslate(xLight1, yLight1, zLight1)
 
 
@@ -225,11 +225,11 @@ def lightLocationFirst():
     theta2 = math.fabs(theta2 % 361)
     phi2 = math.fabs(phi2 % 361)
 
-    #zamiana wartosci phi i theta na radiany
+    # zamiana wartosci phi i theta na radiany
     thetaRadians = math.radians(theta2)
     phiRadians = math.radians(phi2)
 
-    #korzystajac ze wzoru obliczamy wspolrzedne
+    # korzystajac ze wzoru obliczamy wspolrzedne
     xLight = 5.0 * math.cos(thetaRadians) * math.cos(phiRadians)
     yLight = 5.0 * math.sin(phiRadians)
     zLight = 5.0 * math.sin(thetaRadians) * math.cos(phiRadians)
@@ -238,15 +238,15 @@ def lightLocationFirst():
 def lightLocationSecond():
     global phi3, theta3, xLight1, yLight1, zLight1
 
-    #ograniczamy wartosci phi i theta do zakresu [0, 2 * pi]
+    # ograniczamy wartosci phi i theta do zakresu [0, 2 * pi]
     theta3 = math.fabs(theta3 % 361)
     phi3 = math.fabs(phi3 % 361)
 
-    #zamiana wartosci phi i theta na radiany
+    # zamiana wartosci phi i theta na radiany
     thetaRadians = math.radians(theta3)
     phiRadians = math.radians(phi3)
 
-    #korzystajac ze wzoru obliczamy wspolrzedne
+    # korzystajac ze wzoru obliczamy wspolrzedne
     xLight1 = 5.0 * math.cos(thetaRadians) * math.cos(phiRadians)
     yLight1 = 5.0 * math.sin(phiRadians)
     zLight1 = 5.0 * math.sin(thetaRadians) * math.cos(phiRadians)
@@ -280,35 +280,35 @@ def keyboard_key_callback(window, key, scancode, action, mods):
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
 
-    #wlaczenie pokazywania wektorow
+    # wlaczenie pokazywania wektorow
     if key == GLFW_KEY_T and action == GLFW_PRESS:
         showVectors = 1
 
-    #wylaczenie pokazywania wektorow
+    # wylaczenie pokazywania wektorow
     if key == GLFW_KEY_Y and action == GLFW_PRESS:
         showVectors = 0
 
-    #wybranie pierwszego zrodla swiatla
+    # wybranie pierwszego zrodla swiatla
     if key == GLFW_KEY_N and action == GLFW_PRESS:
         firstLight = 1
         secondLight = 0
 
-    #wybranie drugiego zrodla swiatla
+    # wybranie drugiego zrodla swiatla
     if key == GLFW_KEY_M and action == GLFW_PRESS:
         firstLight = 0
         secondLight = 1
 
-    #wlaczenie trybu poruszania zrodlami swiatla
+    # wlaczenie trybu poruszania zrodlami swiatla
     if key == GLFW_KEY_Z and action == GLFW_PRESS:
         moveLightPositionMode = 1
 
-    #wylaczenie trybu poruszania zrodlami swiatla
+    # wylaczenie trybu poruszania zrodlami swiatla
     if key == GLFW_KEY_X and action == GLFW_PRESS:
         moveLightPositionMode = 0
         firstLight = 0
         secondLight = 0
 
-    #obsluga zmieniania poszczegolnych skladowych koloru
+    # obsluga zmieniania poszczegolnych skladowych koloru
     if key == GLFW_KEY_1 and action == GLFW_PRESS:
         lightAmbientChangeR = 1
         lightAmbientChangeG = 0
@@ -499,7 +499,7 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         light2SpecularChangeB = 1
         add = 0
 
-    #zwiekszanie wartosci skladowych
+    # zwiekszanie wartosci skladowych
     if key == GLFW_KEY_K and action == GLFW_PRESS:
         addPress = 1
         add = 0.0
@@ -508,7 +508,7 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         addPress = 0
         add = 0.1
 
-    #zmniejszanie wartosci skladowych
+    # zmniejszanie wartosci skladowych
     if key == GLFW_KEY_L and action == GLFW_PRESS:
         subPress = 1
         add = 0.0
@@ -520,7 +520,7 @@ def keyboard_key_callback(window, key, scancode, action, mods):
     colorChange()
 
 
-#funkcja obslugujaca zmiane wartosci wybranej skladowej koloru swiatla
+# funkcja obslugujaca zmiane wartosci wybranej skladowej koloru swiatla
 def colorChange():
     if firstLight:
         if lightAmbientChangeR:
@@ -564,7 +564,7 @@ def colorChange():
     startup()
 
 
-#zmniejszenie lub zwiekszenie wartosci wybranej skladowej koloru swiatla
+# zmniejszenie lub zwiekszenie wartosci wybranej skladowej koloru swiatla
 def compute(array, i):
     if 0 <= array[i] + add <= 1:
         array[i] += add
@@ -600,7 +600,7 @@ def trianglesEgg():
 
     glBegin(GL_TRIANGLES)
 
-    #wyznaczenie wierzcholkow modelu jajka i powiazanie ich z wektorami normalnymi przy pomocy funkcji glNormal3f()
+    # wyznaczenie wierzcholkow modelu jajka i powiazanie ich z wektorami normalnymi przy pomocy funkcji glNormal3f()
     for i in range(N - 1):
         for j in range(N - 1):
 
@@ -671,7 +671,7 @@ def computeEgg(N):
             tab[i, j, 1] = Y - 5
             tab[i, j, 2] = Z
 
-            #obliczenie wspolrzednych dla wektorow normalnych
+            # obliczenie wspolrzednych dla wektorow normalnych
             uX = (-450 * pow(U, 4) + 900 * pow(U, 3) - 810 * pow(U, 2) + 360 * U - 45) * math.cos(math.pi * V)
             vX = math.pi * (90 * pow(U, 5) - 225 * pow(U, 4) + 270 * pow(U, 3) - 180 * pow(U, 2) + 45 * U) * math.sin(
                 math.pi * V)
@@ -683,26 +683,26 @@ def computeEgg(N):
                                                                                                                 2) + 45 * U) * math.cos(
                 math.pi * V)
 
-            #obliczenie wartosci wektorow dla poszczegolnych wierzcholkow
+            # obliczenie wartosci wektorow dla poszczegolnych wierzcholkow
             vector[i][j][0] = uY * vZ - uZ * vY
             vector[i][j][1] = uZ * vX - uX * vZ
             vector[i][j][2] = uX * vY - uY * vX
 
-            #obliczenie dlugosci wektora
+            # obliczenie dlugosci wektora
             vectorLength = math.sqrt(
                 math.pow(vector[i][j][0], 2) + math.pow(vector[i][j][1], 2) + math.pow(vector[i][j][2], 2))
 
-            #normalizacja wektora dla pierwszej polowy jajka
+            # normalizacja wektora dla pierwszej polowy jajka
             if N / 2 > i > 0:
                 vector[i][j][0] /= vectorLength
                 vector[i][j][1] /= vectorLength
                 vector[i][j][2] /= vectorLength
-            #normalizacja wektora dla drugiej polowy jajka
+            # normalizacja wektora dla drugiej polowy jajka
             elif N / 2 < i < N:
                 vector[i][j][0] /= -vectorLength
                 vector[i][j][1] /= -vectorLength
                 vector[i][j][2] /= -vectorLength
-            #normalizacja wektora dla warunkow brzegowych
+            # normalizacja wektora dla warunkow brzegowych
             elif i == N or i == 0:
                 vector[i][j][0] = 0
                 vector[i][j][1] = -1

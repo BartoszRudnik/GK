@@ -8,7 +8,15 @@ from OpenGL.GLU import *
 from PIL import Image
 from glfw.GLFW import *
 
-N = 25
+# INSTRUKCJA
+# Z -> oteksturowany trojkat
+# X -> oteksturowany kwadrat
+# C -> oteksturowany ostroslup
+# V -> oteksturowane jajko
+# W -> ukrywanie scian ostroslupa
+# A, S, D -> zmiana tekstury
+
+N = 50
 
 triangleColors = np.random.rand(N, N, 3)
 
@@ -29,7 +37,6 @@ showRectangle = 0
 showPyramid = 0
 showEgg = 0
 
-hideTriangle = 0
 wallTriangle1 = 1
 wallTriangle2 = 1
 wallTriangle3 = 1
@@ -57,7 +64,6 @@ att_quadratic = 0.001
 image_1 = 0
 image_2 = 0
 image_3 = 0
-
 
 def startup():
     global image_1, image_2, image_3
@@ -90,6 +96,7 @@ def startup():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
+    #wczytanie tekstur
     image_1 = Image.open("tekstura.tga")
     image_2 = Image.open("Texture_1.TGA")
     image_3 = Image.open("Texture_2.TGA")
@@ -115,10 +122,10 @@ def render(time):
 
     if left_mouse_button_pressed:
         theta += delta_x * pix2angle
-        # phi += delta_y * pix2angle
+        phi += delta_y * pix2angle
 
     glRotatef(theta, 0.0, 1.0, 0.0)
-    glRotatef(phi, 1.0, 0.0, 0.0)
+    #glRotatef(phi, 1.0, 0.0, 0.0)
 
     changeTexture()
 
@@ -137,6 +144,7 @@ def render(time):
     glFlush()
 
 
+#funkcja rysujaca oteksturowany trojkat
 def drawTriangle():
     glBegin(GL_TRIANGLES)
     glTexCoord2f(0.0, 0.0)
@@ -148,6 +156,7 @@ def drawTriangle():
     glEnd()
 
 
+#funkcja rysujaca oteksturowany prostokat
 def drawRectangle():
     glBegin(GL_TRIANGLES)
 
@@ -172,6 +181,7 @@ def drawRectangle():
     glEnd()
 
 
+#funkcja sluzaca do ukrywania kolejnych scian ostroslupa
 def chooseTriangle():
     global count
     global wallTriangle1, wallTriangle2, wallTriangle3, wallTriangle4
@@ -205,6 +215,7 @@ def chooseTriangle():
         wallTriangle4 = 0
 
 
+#funkcja rysujaca ostroslup
 def drawPyramid():
     glBegin(GL_TRIANGLES)
 
@@ -243,9 +254,11 @@ def drawPyramid():
     glEnd()
 
 
+#funkcja obliczajaca wspolrzedne jajka, wektorow i tekstury
 def computeEgg(N):
     tab = np.zeros((N, N, 3))
     tabTextures = np.zeros((N, N, 2))
+    vector = np.zeros((N, N, 3))
 
     tmp = 1 / (N - 1)
 
@@ -265,60 +278,118 @@ def computeEgg(N):
             tabTextures[i, j, 0] = V
             tabTextures[i, j, 1] = U
 
-    return tab, tabTextures
+            # obliczenie wspolrzednych dla wektorow normalnych
+            uX = (-450 * pow(U, 4) + 900 * pow(U, 3) - 810 * pow(U, 2) + 360 * U - 45) * math.cos(math.pi * V)
+            vX = math.pi * (90 * pow(U, 5) - 225 * pow(U, 4) + 270 * pow(U, 3) - 180 * pow(U, 2) + 45 * U) * math.sin(
+                math.pi * V)
+            uY = 640 * math.pow(U, 3) - 960 * math.pow(U, 2) + 320 * U
+            vY = 0
+            uZ = (-450 * math.pow(U, 4) + 900 * math.pow(U, 3) - 810 * math.pow(U, 2) + 360 * U - 45) * math.sin(
+                math.pi * V)
+            vZ = -math.pi * (90 * math.pow(U, 5) - 225 * math.pow(U, 4) + 270 * math.pow(U, 3) - 180 * math.pow(U,
+                                                                                                                2) + 45 * U) * math.cos(
+                math.pi * V)
+
+            # obliczenie wartosci wektorow dla poszczegolnych wierzcholkow
+            vector[i][j][0] = uY * vZ - uZ * vY
+            vector[i][j][1] = uZ * vX - uX * vZ
+            vector[i][j][2] = uX * vY - uY * vX
+
+            # obliczenie dlugosci wektora
+            vectorLength = math.sqrt(
+                math.pow(vector[i][j][0], 2) + math.pow(vector[i][j][1], 2) + math.pow(vector[i][j][2], 2))
+
+            # normalizacja wektora dla pierwszej polowy jajka
+            if N / 2 > i > 0:
+                vector[i][j][0] /= vectorLength
+                vector[i][j][1] /= vectorLength
+                vector[i][j][2] /= vectorLength
+            # normalizacja wektora dla drugiej polowy jajka
+            elif N / 2 < i < N:
+                vector[i][j][0] /= -vectorLength
+                vector[i][j][1] /= -vectorLength
+                vector[i][j][2] /= -vectorLength
+            # normalizacja wektora dla warunkow brzegowych
+            elif i == N or i == 0:
+                vector[i][j][0] = 0
+                vector[i][j][1] = -1
+                vector[i][j][2] = 0
+            else:
+                vector[i][j][0] = 0
+                vector[i][j][1] = 1
+                vector[i][j][2] = 0
+
+    return tab, tabTextures, vector
 
 
+# funkcja rysujaca oteksturowane jajko
 def trianglesEgg():
-    tab, tabTextures = computeEgg(N)
-
-    glBegin(GL_TRIANGLES)
+    tab, tabTextures, vec = computeEgg(N)
 
     for i in range(N - 1):
         for j in range(N - 1):
 
-            if i <= N / 2:
+            # if i < N / 2:
+            #
+            #     glBegin(GL_TRIANGLES)
+            #
+            #     glNormal3f(vec[i][j + 1][0], vec[i][j + 1][1], vec[i][j + 1][2])
+            #     glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+            #     glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
+            #
+            #     glNormal3f(vec[i + 1][j][0], vec[i + 1][j][1], vec[i + 1][j][2])
+            #     glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
+            #     glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
+            #
+            #     glNormal3f(vec[i + 1][j + 1][0], vec[i + 1][j + 1][1], vec[i + 1][j + 1][2])
+            #     glTexCoord2f(tabTextures[i + 1][j + 1][0], tabTextures[i + 1][j + 1][1])
+            #     glVertex3f(tab[i + 1][j + 1][0], tab[i + 1][j + 1][1], tab[i + 1][j + 1][2])
+            #
+            #     glNormal3f(vec[i, j, 0], vec[i, j, 1], vec[i, j, 2])
+            #     glTexCoord2f(tabTextures[i][j][0], tabTextures[i][j][1])
+            #     glVertex3f(tab[i][j][0], tab[i][j][1], tab[i][j][2])
+            #
+            #     glNormal3f(vec[i + 1][j][0], vec[i + 1][j][1], vec[i + 1][j][2])
+            #     glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
+            #     glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
+            #
+            #     glNormal3f(vec[i][j + 1][0], vec[i][j + 1][1], vec[i][j + 1][2])
+            #     glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+            #     glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
+            #
+            #     glEnd()
 
-                glTexCoord2f(tabTextures[i][j][0], tabTextures[i][j][1])
-                glVertex3f(tab[i][j][0], tab[i][j][1], tab[i][j][2])
+            if i >= N / 2:
+                glBegin(GL_TRIANGLES)
 
-                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
-                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
-
-                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
-                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
-
-                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
-                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
-
+                # glNormal3f(vec[i + 1][j + 1][0], vec[i + 1][j + 1][1], vec[i + 1][j + 1][2])
                 glTexCoord2f(tabTextures[i + 1][j + 1][0], tabTextures[i + 1][j + 1][1])
                 glVertex3f(tab[i + 1][j + 1][0], tab[i + 1][j + 1][1], tab[i + 1][j + 1][2])
 
+                # glNormal3f(vec[i + 1][j][0], vec[i + 1][j][1], vec[i + 1][j][2])
                 glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
                 glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
 
-            else:
+                # glNormal3f(vec[i][j + 1][0], vec[i][j + 1][1], vec[i][j + 1][2])
+                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
 
+                # glNormal3f(vec[i][j + 1][0], vec[i][j + 1][1], vec[i][j + 1][2])
+                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
+                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
+
+                # glNormal3f(vec[i + 1][j][0], vec[i + 1][j][1], vec[i + 1][j][2])
+                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
+                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
+
+                # glNormal3f(vec[i][j][0], vec[i][j][1], vec[i][j][2])
                 glTexCoord2f(tabTextures[i][j][0], tabTextures[i][j][1])
                 glVertex3f(tab[i][j][0], tab[i][j][1], tab[i][j][2])
 
-                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
-                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
-
-                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
-                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
-
-                glTexCoord2f(tabTextures[i][j + 1][0], tabTextures[i][j + 1][1])
-                glVertex3f(tab[i][j + 1][0], tab[i][j + 1][1], tab[i][j + 1][2])
-
-                glTexCoord2f(tabTextures[i + 1][j][0], tabTextures[i + 1][j][1])
-                glVertex3f(tab[i + 1][j][0], tab[i + 1][j][1], tab[i + 1][j][2])
-
-                glTexCoord2f(tabTextures[i + 1][j + 1][0], tabTextures[i + 1][j + 1][1])
-                glVertex3f(tab[i + 1][j + 1][0], tab[i + 1][j + 1][1], tab[i + 1][j + 1][2])
-
-    glEnd()
+                glEnd()
 
 
+#funkcja umozliwiajaca wybranie jednej z trzech dostepnych tekstur
 def changeTexture():
     if firstTexture:
         glTexImage2D(
@@ -358,50 +429,55 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
-    global hideTriangle
     global firstTexture, secondTexture, thirdTexture
     global showTriangle, showRectangle, showPyramid, showEgg
 
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
 
+    # W -> ukrywanie kolejnych scian ostroslupa
     if key == GLFW_KEY_W and action == GLFW_PRESS:
-        hideTriangle = 1
         chooseTriangle()
 
+    # A -> wybranie pierwszej tekstury
     if key == GLFW_KEY_A and action == GLFW_PRESS:
         firstTexture = 1
         secondTexture = 0
         thirdTexture = 0
-
+    # S -> wybranie drugiej tekstury
     if key == GLFW_KEY_S and action == GLFW_PRESS:
         firstTexture = 0
         secondTexture = 1
         thirdTexture = 0
 
+    # D -> wybranie trzeciej tekstury
     if key == GLFW_KEY_D and action == GLFW_PRESS:
         firstTexture = 0
         secondTexture = 0
         thirdTexture = 1
 
+    # Z -> wyswietlenie oteksturowanego trojkata
     if key == GLFW_KEY_Z and action == GLFW_PRESS:
         showTriangle = 1
         showRectangle = 0
         showPyramid = 0
         showEgg = 0
 
+    # X -> wyswietlenie oteksturowanego prostokata
     if key == GLFW_KEY_X and action == GLFW_PRESS:
         showTriangle = 0
         showRectangle = 1
         showPyramid = 0
         showEgg = 0
 
+    # C -> wyswietlenie oteksturowanego ostroslupa
     if key == GLFW_KEY_C and action == GLFW_PRESS:
         showTriangle = 0
         showRectangle = 0
         showPyramid = 1
         showEgg = 0
 
+    # V -> wyswietlenie oteksturowanego jajka
     if key == GLFW_KEY_V and action == GLFW_PRESS:
         showTriangle = 0
         showRectangle = 0
