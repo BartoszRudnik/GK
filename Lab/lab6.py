@@ -96,10 +96,10 @@ def startup():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
-    #wczytanie tekstur
+    # wczytanie tekstur
     image_1 = Image.open("tekstura.tga")
-    image_2 = Image.open("Texture_1.TGA")
-    image_3 = Image.open("Texture_2.TGA")
+    image_2 = Image.open("Texture_1.tga")
+    image_3 = Image.open("Texture_2.tga")
 
     glTexImage2D(
         GL_TEXTURE_2D, 0, 3, image_1.size[0], image_1.size[1], 0,
