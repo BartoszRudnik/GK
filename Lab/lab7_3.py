@@ -250,9 +250,9 @@ def render(time):
 
     # oddalenie kamery
     V_matrix = glm.lookAt(
-        glm.vec3(0.0, 0.0, 15.0),
+        glm.vec3(0.0, 0.0, 18.0),
         glm.vec3(0.0, 0.0, 0.0),
-        glm.vec3(0.0, 15.0, 0.0)
+        glm.vec3(0.0, 18.0, 0.0)
     )
 
     glUseProgram(rendering_program)
