@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Zadanie 5, deformacja kazdego obiektu
+
 import sys
 
 import glm
@@ -24,21 +26,28 @@ def compile_shaders():
 
         uniform mat4 M_matrix;
         uniform mat4 V_matrix;
-        uniform mat4 P_matrix;
+        uniform mat4 P_matrix;        
         
-        float random(int first, int second)
+        //funkcja pesudolosowa użyta do wykonania transformacji
+        highp float random(vec2 vec)
         {
-            int n = int(first * 45000 + second * 64000);
-            n = (n << 13) ^ n;
-            return 1.0 - float( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;
+            highp float a = 12.9898;
+            highp float b = 78.233;
+            highp float c = 43758.5453;
+            highp float dt= dot(vec.xy, vec2(a,b));
+            highp float sn= mod(dt,3.14);
+            return fract(sin(sn) * c);
         }
 
         void main(void) {
             
-            float rand = random(gl_InstanceID, gl_VertexID);        
+            //stworzenie zmiennej typu vec2 na podstawie pol gl_VertexID i gl_InstanceID
+            vec2 vec = vec2(gl_VertexID, gl_InstanceID);
+            float rand = random(vec);        
            
-            gl_Position = rand + P_matrix * V_matrix * M_matrix *
-                (position + (gl_InstanceID % 10) * vec4(2, 0, 0, 0) + vec4(0, gl_InstanceID / 10, 0, 0));                
+           //wprowadzenie deformacji przy pomocy dzialania "+ vec4(rand, rand, rand, 0)"
+            gl_Position = P_matrix * V_matrix * M_matrix *
+                (position + (gl_InstanceID % 10) * vec4(2, 0, 0, 0) + vec4(0, gl_InstanceID / 10, 0, 0) + vec4(rand, rand, rand, 0));                
                      
             newColors = colors;
                         
@@ -239,6 +248,7 @@ def render(time):
 
     M_matrix = glm.rotate(glm.mat4(1.0), time, glm.vec3(1.0, 1.0, 0.0))
 
+    # oddalenie kamery
     V_matrix = glm.lookAt(
         glm.vec3(0.0, 0.0, 15.0),
         glm.vec3(0.0, 0.0, 0.0),

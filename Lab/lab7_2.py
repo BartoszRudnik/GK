@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Zadanie 4, mechanizm renderowania instancyjnego
+
 import sys
 
 import glm
@@ -27,9 +29,13 @@ def compile_shaders():
         uniform mat4 P_matrix;
 
         void main(void) {
+        
+            //transformacja wierzcholkow, na osi x (gl_InstanceID % 10), na osi y (gl_InstanceID / 10)
             gl_Position = P_matrix * V_matrix * M_matrix *
-             (position + (gl_InstanceID % 10) * vec4(1, 0, 0, 0) + vec4(0, gl_InstanceID / 10, 0, 0));           
+             (position + (gl_InstanceID % 10) * vec4(1, 0, 0, 0) + (gl_InstanceID / 10) * vec4(0, 1, 0, 0)); 
+                       
             newColors = colors;
+            
         }
     """
 
@@ -147,13 +153,13 @@ def startup():
     ], dtype='float32')
 
     vertex_colors = numpy.array([
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
 
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
 
         0.1, 0.7, 0.1, 1.0,
         0.1, 0.7, 0.1, 1.0,
@@ -171,29 +177,29 @@ def startup():
         0.1, 0.2, 0.5, 1.0,
         0.1, 0.2, 0.5, 1.0,
 
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
 
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
-
-        1.0, 0.0, 0.0, 1.0,
-        1.0, 0.0, 0.0, 1.0,
-        1.0, 0.0, 0.0, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
 
         1.0, 0.0, 0.0, 1.0,
         1.0, 0.0, 0.0, 1.0,
         1.0, 0.0, 0.0, 1.0,
 
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
 
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
     ], dtype='float32')
 
     vertex_buffer = glGenBuffers(1)
@@ -227,6 +233,7 @@ def render(time):
 
     M_matrix = glm.rotate(glm.mat4(1.0), time, glm.vec3(1.0, 1.0, 0.0))
 
+    # oddalenie kamery
     V_matrix = glm.lookAt(
         glm.vec3(0.0, 0.0, 18.0),
         glm.vec3(0.0, 0.0, 0.0),
@@ -242,6 +249,7 @@ def render(time):
     glUniformMatrix4fv(V_location, 1, GL_FALSE, glm.value_ptr(V_matrix))
     glUniformMatrix4fv(P_location, 1, GL_FALSE, glm.value_ptr(P_matrix))
 
+    #narysowanie 10x10 kopii obiektu
     glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 100)
 
 

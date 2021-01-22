@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Zadania 1, 2, 3
+
 import sys
 
 import glm
@@ -19,6 +21,8 @@ def compile_shaders():
         #version 330 core
 
         in vec4 position;
+        //zdefiniowanie zmiennej in vec4 colors do odczytu kolorow i zmiennej out vec4 newColors do przesylu kolorow
+        //do shadera fragmentow 
         in vec4 colors;              
         out vec4 newColors;
 
@@ -27,8 +31,10 @@ def compile_shaders():
         uniform mat4 P_matrix;
         
         void main(void) {
+        
             gl_Position = P_matrix * V_matrix * M_matrix * position;            
             newColors = colors;
+            
         }
     """
 
@@ -39,7 +45,9 @@ def compile_shaders():
         out vec4 color;
         
         void main(void) {
+            //przypisanie odczytanych kolorow
             color = newColors;
+            
         }
     """
 
@@ -145,14 +153,15 @@ def startup():
         -0.25, +0.25, -0.25,
     ], dtype='float32')
 
+    #definicja nowej tablicy z kolorami
     vertex_colors = numpy.array([
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
 
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
-        0.5, 0.2, 0.1, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
+        0.5, 0.2, 0.6, 1.0,
 
         0.1, 0.7, 0.1, 1.0,
         0.1, 0.7, 0.1, 1.0,
@@ -170,29 +179,29 @@ def startup():
         0.1, 0.2, 0.5, 1.0,
         0.1, 0.2, 0.5, 1.0,
 
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
 
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
-        0.9, 0.2, 0.5, 1.0,
-
-        1.0, 0.0, 0.0, 1.0,
-        1.0, 0.0, 0.0, 1.0,
-        1.0, 0.0, 0.0, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
+        0.6, 0.8, 0.5, 1.0,
 
         1.0, 0.0, 0.0, 1.0,
         1.0, 0.0, 0.0, 1.0,
         1.0, 0.0, 0.0, 1.0,
 
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
 
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
-        0.5, 0.3, 0.2, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
+        0.1, 0.5, 0.7, 1.0,
     ], dtype='float32')
 
     vertex_buffer = glGenBuffers(1)
@@ -202,6 +211,7 @@ def startup():
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
     glEnableVertexAttribArray(0)
 
+    #definicja bufora danych do obłslugi kolorow
     colors_buffer = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, colors_buffer)
     glBufferData(GL_ARRAY_BUFFER, vertex_colors, GL_STATIC_DRAW)
@@ -226,6 +236,7 @@ def render(time):
 
     M_matrix = glm.rotate(glm.mat4(1.0), time, glm.vec3(1.0, 1.0, 0.0))
 
+    #oddalenie kamery
     V_matrix = glm.lookAt(
         glm.vec3(0.0, 0.0, 18.0),
         glm.vec3(0.0, 0.0, 0.0),
@@ -241,13 +252,16 @@ def render(time):
     glUniformMatrix4fv(V_location, 1, GL_FALSE, glm.value_ptr(V_matrix))
     glUniformMatrix4fv(P_location, 1, GL_FALSE, glm.value_ptr(P_matrix))
 
+    #narysowanie 10x10 kopii obiektu w sposob klasyczny
     for i in range(10):
         for j in range(10):
             glDrawArrays(GL_TRIANGLES, 0, 36)
 
+            #przeksztalcenie na osi x
             M_matrix = glm.translate(M_matrix, glm.vec3(1.0, 0.0, 0.0))
             glUniformMatrix4fv(M_location, 1, GL_FALSE, glm.value_ptr(M_matrix))
 
+        #przekstalcenie na osi y
         M_matrix = glm.translate(M_matrix, glm.vec3(-10.0, 1.0, 0.0))
         glUniformMatrix4fv(M_location, 1, GL_FALSE, glm.value_ptr(M_matrix))
 
